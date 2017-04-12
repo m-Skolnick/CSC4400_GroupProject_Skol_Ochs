@@ -77,13 +77,34 @@ struct processType {
 void getData(ifstream &dataIN) {
 
 
-	int newItem = 0;
+	int i = 0, newJob = 0, jobLength = 0,burstLength = 0;
 
+	dataIN >> ws >> newJob; // Seed read first job number
 
-	while (newItem > 0) { //Read in integers until the last negative value is reached
+	while (newJob > 0) { //Read in jobs until the last negative value is reached
 
+		jList[i].number = newJob;
+		dataIN >> jList[i].length;
+		dataIN >> jList[i].arrival;
+		dataIN >> jList[i].IOBurst;
 
+		dataIN >> burstLength; // seed read the first burst length
+		int j = 0;
+		while (burstLength > 0) {
 
+			jList[i].CPUBurstLength[j]= burstLength;
+
+			dataIN >> burstLength; // Read in the next burst length
+			j++;
+
+		}
+		jList[i].IOburstCount = j; // Set the number of bursts to the number of loops
+
+		if (burstLength < 0) {
+			return; // exit the function if a burst length of -1 was reached
+		}
+		i++; // Increment the job count
+		dataIN >> ws >> newJob;
 	}
 }
 //************************************* END OF FUNCTION FOOTER  ***************************************

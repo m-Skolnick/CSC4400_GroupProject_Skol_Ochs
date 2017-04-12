@@ -5,7 +5,11 @@
 
 int MAXLINECOUNT = 50;
 int lineCount;
-int processList[50];
+struct jobType {
+	int number, length, arrival, IOBurst, CPUBurstLength[10], IOburstCount;
+
+};
+jobType jList[101];
 
 
 
