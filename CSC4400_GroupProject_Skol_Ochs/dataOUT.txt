@@ -1,5 +1,5 @@
    Brenden Ochs & Micaiah Skolnick         CSC 40600     Section 11
-                Spring 2017                 Assignment #2
+                Spring 2017       Assignment #2 (testing)
 ---------------------------------- - ---------------------------------- - 
 
 
