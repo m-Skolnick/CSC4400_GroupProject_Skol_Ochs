@@ -46,7 +46,7 @@ void Header(ofstream &Outfile)
 {       // Receives – the output file
 		// Task - Prints the output preamble
 		// Returns - Nothing
-	Outfile << setw(35) << "Brenden Ochs & Micaiah Skolnick ";
+	Outfile << setw(35) << "Person & Micaiah Skolnick ";
 	Outfile << setw(17) << "CSC 40600";
 	Outfile << setw(15) << "Section 11" << endl;
 	Outfile << setw(27) << "Spring 2017";
