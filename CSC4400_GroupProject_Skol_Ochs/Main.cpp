@@ -35,7 +35,7 @@ void newPage(ofstream&dataOUT) {
 	// Task - Insert blank lines to fill the rest of the current page
 	// Returns - Nothing
 	//Insert line ends until the end of page is reached
-	while (lineCount < MAXLINECOUNT) {
+	while (lineCount < LINESPERPAGE) {
 		dataOUT << endl;
 		lineCount++;
 	}
@@ -47,7 +47,7 @@ void Header(ofstream &Outfile)
 		// Task - Prints the output preamble
 		// Returns - Nothing
 
-	Outfile << setw(35) << "Brandkajdsflksdjfsdlk Ochykdsjlafdsj & Micaiah Skolnick";
+	Outfile << setw(35) << "Brendan Ochs & Micaiah Skolnick";
 	Outfile << setw(17) << "CSC 40600";
 	Outfile << setw(15) << "Section 11" << endl;
 	Outfile << setw(27) << "Spring 2017";
@@ -115,7 +115,7 @@ int main() {
 
 	//Initialize local variables
 	lineCount = 0;
-	MAXLINECOUNT = 54;
+	LINESPERPAGE = 54;
 	//processList = processList[50];
 
 
@@ -124,7 +124,7 @@ int main() {
 	// Returns - Nothing
 	//Initialize variables used in program.		
 	lineCount = 0;
-	MAXLINECOUNT = 54; //Set the max number of lines which fit on a page
+	LINESPERPAGE = 54; //Set the max number of lines which fit on a page
 	ifstream dataIN("Data_in.txt"); //Open the file containing data.
 	ofstream dataOUT("dataOUT.txt"); //Create and open the file to write data to.		
 	Header(dataOUT);// Print data header.
