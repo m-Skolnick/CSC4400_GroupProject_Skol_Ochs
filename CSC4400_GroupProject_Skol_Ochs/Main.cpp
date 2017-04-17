@@ -75,7 +75,7 @@ struct processType {
 	int tArrival, pTime; // Need to add a lot more values for each structure
 };
 //*****************************************************************************************************
-void getData(ifstream &dataIN) {
+void getData() {
 
 
 	int i = 0, newJob = 0, jobLength = 0,burstLength = 0;
@@ -123,12 +123,11 @@ int main() {
 	// Task - Call each necessary function of the program in order
 	// Returns - Nothing
 	//Initialize variables used in program.		
-	lineCount = 0;
-	LINESPERPAGE = 54; //Set the max number of lines which fit on a page
-	ifstream dataIN("Data_in.txt"); //Open the file containing data.
-	ofstream dataOUT("dataOUT.txt"); //Create and open the file to write data to.		
+
+	
+		
 	Header(dataOUT);// Print data header.
-	getData(dataIN); //Retrieve data from input file
+	getData(); //Retrieve data from input file
 					 //processData(dataOUT, dataIN); // Process each section of data from the input file.
 	newPage(dataOUT); //Insert a page break before the footer
 	Footer(dataOUT); //Print footer. 

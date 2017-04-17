@@ -18,6 +18,9 @@
     <Text Include="Data_in.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="dataOUT.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
