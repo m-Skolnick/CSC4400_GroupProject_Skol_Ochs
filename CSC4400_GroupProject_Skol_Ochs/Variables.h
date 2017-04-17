@@ -9,12 +9,29 @@ using namespace std;
 struct jobType {
 	int number, length, arrival, IOBurst, CPUBurstLength[10], IOburstCount;
 
+	//Added by Micaiah
+	int waitCounter;
+
 };
-jobType jList[101];
+
+
+//Variables added by Micaiah
+int lineCount = 0; //Intialize the line counter to 0
+const int LINESPERPAGE = 54; //Set the max number of lines which fit on a page
+const int MAXJOBNUMBER = 150; //Set the maximum number of jobs to 150
+const int MAXALLOWEDINLTQ = 60; //Set the max num of jobs allowed in long term Q to 60
+const int MAXALLOWEDINSTQ = 30;
+const int MAXALLOWEDINIOQ = 30;
+
+int currentJob = 0;//keeps track of which job is currently in the system
+int system_clock = 0; //Keeps track of the system time
+
+jobType jList[MAXJOBNUMBER]; //Declare and initialize the list of jobs
 ifstream dataIN("Data_in.txt"); //Open the file containing data.
-ofstream dataOUT("dataOUT.txt"); //Create and open the file to write data to.	
-int lineCount = 0;
-int LINESPERPAGE = 54; //Set the max number of lines which fit on a page
+ofstream dataOUT("dataOUT.txt"); //Create and open the file to write data to.
+
+
+//Variables given by Dr. Vandyke
 int io_timer = 0; // Indicates the current I / O burst 
 int job_timer = 0; // Keeps track of the time between job arrivals 
 int more_jobs = 0; // Keeps track of the # of jobs in system 
@@ -31,7 +48,7 @@ int stop_flag = false; //Signals to stop CPU job processing
 int suspend_flag = false; //Signals context switch to handle interrupt 
 
 int cpu = 0; //integer to indicate which job has the CPU.            
-int count = 0; // keeps track of the number of processes ran 
+int job_count = 0; // keeps track of the number of processes ran 
 int devise = 0; // integer to signal which process is in the I / O device 
 int process = 1; //integer to indicate the process entering the CPU      
 int ioprocess = 1; //integer to indicate the process entering the I / O device

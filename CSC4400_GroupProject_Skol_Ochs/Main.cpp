@@ -46,7 +46,6 @@ void Header(ofstream &Outfile)
 {       // Receives – the output file
 		// Task - Prints the output preamble
 		// Returns - Nothing
-
 	Outfile << setw(35) << "Brendan Ochs & Micaiah Skolnick";
 	Outfile << setw(17) << "CSC 40600";
 	Outfile << setw(15) << "Section 11" << endl;
@@ -70,66 +69,139 @@ void Footer(ofstream &Outfile) {
 	lineCount += 4;
 	return;
 }
-//*****************************************************************************************************
-struct processType {
-	int tArrival, pTime; // Need to add a lot more values for each structure
-};
-//*****************************************************************************************************
+//************************************* END OF FUNCTION FOOTER  ***************************************
 void getData() {
-
-
-	int i = 0, newJob = 0, jobLength = 0,burstLength = 0;
-
+		// Receives – Nothing
+		// Task - Reads all of the data from input file into a job array
+		// Returns - Nothing
+	int i = 0, newJob = 0, burstLength = 0;
 	dataIN >> ws >> newJob; // Seed read first job number
-
 	while (newJob > 0) { //Read in jobs until the last negative value is reached
-
 		jList[i].number = newJob;
 		dataIN >> jList[i].length;
 		dataIN >> jList[i].arrival;
 		dataIN >> jList[i].IOBurst;
-
-		dataIN >> burstLength; // seed read the first burst length
+		dataIN >> burstLength; //Seed read the first burst length
 		int j = 0;
 		while (burstLength > 0) {
-
 			jList[i].CPUBurstLength[j]= burstLength;
-
 			dataIN >> burstLength; // Read in the next burst length
-			j++;
-
+			j++; //Increment the burst count
 		}
 		jList[i].IOburstCount = j; // Set the number of bursts to the number of loops
-
 		if (burstLength < 0) {
-			return; // exit the function if a burst length of -1 was reached
+			return; //Exit the function if a burst length of -1 is reached
 		}
 		i++; // Increment the job count
 		dataIN >> ws >> newJob;
 	}
 }
-//************************************* END OF FUNCTION FOOTER  ***************************************
+//*****************************************************************************************************
+bool addJobToSystem() {
+	// Receives – Nothing
+	// Task - If job has arrived, adds it to the system
+	// Returns - A bool to indicate whether a job was added to the system
 
+	if (jList[currentJob].arrival = job_timer) {
+		job_flag = true;
+		//Record time of arrival
+		job_timer = 0; //Reset job_timer to zero
+		job_count++; //Increment count
+		more_jobs++; //Increment more_jobs
+		return true; //If a job was added, return true
+	}
+	else {
+		return false; //If a job wasn't added, return false
+	}
+}
+//*****************************************************************************************************
+void manageLTQ() {
+	// Receives – Nothing
+	// Task - Manages the Long Term Q
+	// Returns - Nothing
+	while (job_flag != 0) {//While there are jobs to process (not sure if this is right)
+
+		if (ltq_empty == false) {
+			//Increment the wait counters for all processes in the queue.
+		}
+		if (job_flag && !ltq_full) {
+			//put the incoming job(s) in the queue
+			job_flag = false;//set job_flag to false
+			ltq_empty = false; //set ltq_empty to false
+		}
+		//If the ltq que is full then set ltq_full to true
+	}
+}
+//*****************************************************************************************************
+void manageSTQ() {
+	// Receives – Nothing
+	// Task - Manages the Short Term Q
+	// Returns - Nothing
+	
+}
+//*****************************************************************************************************
+void manageCPU() {
+	// Receives – Nothing
+	// Task - Manages the CPU
+	// Returns - Nothing
+
+}
+//*****************************************************************************************************
+void manageIOQ() {
+	// Receives – Nothing
+	// Task - Manages the Input Output Q
+	// Returns - Nothing
+
+}
+//*****************************************************************************************************
+void manageIODevice() {
+	// Receives – Nothing
+	// Task - Manages the IO device
+	// Returns - Nothing
+
+}
+//*****************************************************************************************************
+void removeFinished() {
+	// Receives – Nothing
+	// Task - Removes finished processes
+	// Returns - Nothing
+
+}
+//*****************************************************************************************************
 int main() {
-
-
-	//Initialize local variables
-	lineCount = 0;
-	LINESPERPAGE = 54;
-	//processList = processList[50];
-
-
 	// Receives – Nothing
 	// Task - Call each necessary function of the program in order
-	// Returns - Nothing
-	//Initialize variables used in program.		
-
-	
-		
+	// Returns - Nothing		
 	Header(dataOUT);// Print data header.
+
+	/*1.  Initialize variables
+		**   	2.  Read in all processes from the input file.
+		**   	3.  Enter the first process into the system.
+		4.  Increment the clock
+		5.  While(jobs are being processed)
+		**       	4.1  Manage the LTQ
+		**       	4.2  Manage the STQ
+		**       	4.3  Manage the CPU
+		**       	4.4  Manage the I / O Queue
+		**       	4.5  Manage the I / O Device
+		**       	4.6  Remove finished jobs
+		4.7  Increment the clock
+		**       	4.8  Check for incoming processes
+		**   	6.  Process the accumulated data.
+	*/
 	getData(); //Retrieve data from input file
-					 //processData(dataOUT, dataIN); // Process each section of data from the input file.
-	newPage(dataOUT); //Insert a page break before the footer
+	addJobToSystem(); //Get a job into the system
+	//while () { //While jobs are being processed //Not sure how you tell if jobs are being processed
+		manageLTQ(); //manage the Long Term Q
+		manageSTQ(); //manage the short term Q
+		manageCPU(); //manage the CPU
+		manageIOQ(); //manage the IO Queue
+		manageIODevice(); //manage the IO device
+		removeFinished(); //remove finished jobs
+	//}
+	system_clock++; //Increment the clock
+
+
 	Footer(dataOUT); //Print footer. 
 	dataIN.close(); //Close input data file. 
 	dataOUT.close(); //Close output data file.
