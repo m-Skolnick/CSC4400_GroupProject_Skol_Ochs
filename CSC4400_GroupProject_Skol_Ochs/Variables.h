@@ -49,7 +49,7 @@ int suspend_flag = false; //Signals context switch to handle interrupt
 
 int cpu = 0; //integer to indicate which job has the CPU.            
 int job_count = 0; // keeps track of the number of processes ran 
-int devise = 0; // integer to signal which process is in the I / O device 
+int device = 0; // integer to signal which process is in the I / O device
 int process = 1; //integer to indicate the process entering the CPU      
 int ioprocess = 1; //integer to indicate the process entering the I / O device
 int temp = 0; // integer to indicate which process is suspended 

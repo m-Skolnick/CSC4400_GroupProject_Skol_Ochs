@@ -102,7 +102,7 @@ bool addJobToSystem() {
 	// Task - If job has arrived, adds it to the system
 	// Returns - A bool to indicate whether a job was added to the system
 
-	if (jList[currentJob].arrival = job_timer) {
+	if (jList[currentJob].arrival == job_timer) {
 		job_flag = true;
 		//Record time of arrival
 		job_timer = 0; //Reset job_timer to zero
@@ -120,6 +120,8 @@ void manageLTQ() {
 	// Task - Manages the Long Term Q
 	// Returns - Nothing
 	while (job_flag != 0) {//While there are jobs to process (not sure if this is right)
+                            // It isnt in the Psuedocode she gave us. But we can cross this
+                            // bridge when we get to it.
 
 		if (ltq_empty == false) {
 			//Increment the wait counters for all processes in the queue.
@@ -137,7 +139,46 @@ void manageSTQ() {
 	// Receives – Nothing
 	// Task - Manages the Short Term Q
 	// Returns - Nothing
-	
+    if (!stq_empty)                 //if stq_empty is false
+    {
+        //increment wait counters for all processes in the que
+    }
+    if (io_complete_flag)           //if io_complete_flag is true
+    {
+        io_complete_flag = false;   //reset io_complete_flag to false
+        io_device_flag = true;      //set io_device_flag to true
+        if (finished_flag)          //if finished flag is true
+        {
+            more_jobs--;            //decrement more jobs (remove job from system)
+            finished_flag = false;
+            //collect data
+        }
+        else if (!stq_full)         //if stq_full is false
+        {
+            //place process in the stq
+            device = 0;//set device = 0
+            if(STQ is full)            // This seems weird... but this is what her psuedocode says
+            {
+                stq_full = true;
+                
+            }
+            
+        }
+        if(!stq_full && !ltq_empty) //if stq_full is false and ltq_empty is false
+        {
+            //move process from LTQ to STQ
+            stq_empty = false;
+            if (LTQ is now empty)
+            {
+                ltq_empty = true;
+                ltq_full = false;
+            }
+            if (STQ is full)
+            {
+                stq_full = true;
+            }
+        }
+    }
 }
 //*****************************************************************************************************
 void manageCPU() {
