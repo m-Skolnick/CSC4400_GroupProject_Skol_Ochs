@@ -31,10 +31,10 @@
 using namespace std;
 //*****************************************************************************************************
 void newPage(ofstream&dataOUT) {
-	// Receives – the output file
-	// Task - Insert blank lines to fill the rest of the current page
-	// Returns - Nothing
-	//Insert line ends until the end of page is reached
+        // Receives – the output file
+        // Task - Insert blank lines to fill the rest of the current page
+        // Returns - Nothing
+        //Insert line ends until the end of page is reached
 	while (lineCount < LINESPERPAGE) {
 		dataOUT << endl;
 		lineCount++;
@@ -59,9 +59,9 @@ void Header(ofstream &Outfile)
 //************************************* END OF FUNCTION HEADER  ***************************************
 //*************************************  FUNCTION FOOTER  *********************************************
 void Footer(ofstream &Outfile) {
-	// Receives – the output file
-	// Task - Prints the output salutation
-	// Returns - Nothing
+        // Receives – the output file
+        // Task - Prints the output salutation
+        // Returns - Nothing
 	Outfile << endl;
 	Outfile << setw(35) << "-------------------------------- - " << endl;
 	Outfile << setw(35) << " | END OF PROGRAM OUTPUT | " << endl;
@@ -98,9 +98,9 @@ void getData() {
 }
 //*****************************************************************************************************
 bool addJobToSystem() {
-	// Receives – Nothing
-	// Task - If job has arrived, adds it to the system
-	// Returns - A bool to indicate whether a job was added to the system
+        // Receives – Nothing
+        // Task - If job has arrived, adds it to the system
+        // Returns - A bool to indicate whether a job was added to the system
 
 	if (jList[currentJob].arrival == job_timer) {
 		job_flag = true;
@@ -116,9 +116,9 @@ bool addJobToSystem() {
 }
 //*****************************************************************************************************
 void manageLTQ() {
-	// Receives – Nothing
-	// Task - Manages the Long Term Q
-	// Returns - Nothing
+        // Receives – Nothing
+        // Task - Manages the Long Term Q
+        // Returns - Nothing
 	while (job_flag != 0) {//While there are jobs to process (not sure if this is right)
                             // It isnt in the Psuedocode she gave us. But we can cross this
                             // bridge when we get to it.
@@ -136,9 +136,9 @@ void manageLTQ() {
 }
 //*****************************************************************************************************
 void manageSTQ() {
-	// Receives – Nothing
-	// Task - Manages the Short Term Q
-	// Returns - Nothing
+        // Receives – Nothing
+        // Task - Manages the Short Term Q
+        // Returns - Nothing
     if (!stq_empty)                 //if stq_empty is false
     {
         //increment wait counters for all processes in the que
@@ -182,37 +182,200 @@ void manageSTQ() {
 }
 //*****************************************************************************************************
 void manageCPU() {
-	// Receives – Nothing
-	// Task - Manages the CPU
-	// Returns - Nothing
+        // Receives – Nothing
+        // Task - Manages the CPU
+        // Returns - Nothing
+    
+    if (suspend_flag)                               //if suspend_flag is true
+    {
+        suspend_timer--;                            //decrement suspend timer
+        if(suspend_timer == 0)                      //if suspend_timer is 0
+        {
+            interrupt_flag = false;                 //set interrupt_flag to false
+            suspend_flag = false;                   //set suspend_flag to false
+        }
+        else if (temp == process)
+        {
+            //increment CPU wait counter
+            stop_flag = true;                       //set stop_flag to true
+        }
+    }
+    if (!stop_flag)                                 //if stop_flag is false
+    {
+            if(interrupt_flag)                      //if interrupt_flag is true
+            {
+                if(suspend_timer == 0)              //if suspend_timer equals 0
+                {
+                    if(cpu > 0)                     //if cpu is greater than 0
+                    {
+                        temp = cpu;                 //set temp equal to 0
+                        cpu = 0;                    //set cpu equal to 0
+                    }
+                    suspend_timer = 3;              //set suspend_timer equal to 3
+                    suspend_flag = false;           //set suspend timer to true
+                }
+            }
+            else
+            {
+                if (cpu == process)                //if cpu equals process
+                {
+                    process_timer++;                    //increment process_timer
+                    if(process_timer == jType.CPUBurstLength[]) //if processtimer equals
+                                                            //jtype.CpuBurstLength
+                    {
+                        cpu_complete_flag = true;       //set cpu_complete_flag to true
+                        process_timer = 0;              //set process_timer equal to 0
+                    }
+                    else
+                    {
+                        if(temp == process)         //if temp equals process
+                        {
+                            cpu = process;          //cpu equals process
+                            //increment cpu wait counter
+                            temp = 0;               //set temp equal to 0
+                        }
+                        else
+                        {
+                            if(!stq_empty && cpu_ready_flag) //if stq_empty is false and
+                                                             //cpu_ready_flag is true
+                            {
+                                //set process equal to the head of the STQ
+                                cpu = process;      //set cpu equal to process
+                                //delete job from queue
+                                stq_full = false;   //set stq_full to false
+                                if() //if STQ is now empty
+                                       stq_empty = true;    //set stq_empty to true
+                                cpu_ready_flag = false;  //set cpu_ready_flag to false
+                                process_timer = 0;       //set process_timer equal to 0
+                            }
+                        }
+                    }
+                }
+            }
+    }
+    stop_flag = false;                                  //set stop_flag equal to false
 
 }
 //*****************************************************************************************************
 void manageIOQ() {
-	// Receives – Nothing
-	// Task - Manages the Input Output Q
-	// Returns - Nothing
+        // Receives – Nothing
+        // Task - Manages the Input Output Q
+        // Returns - Nothing
+    
+    if(!ioq_empty)                      //if ioq_empty is false
+        //increment IOQ wait counter for all processes in the queue
+    if(cpu_complete_flag)               //if cpu_complete_flag is true
+        if(!ioq_full)                   //if ioq_full is false
+        {
+            //add the process to the tail of the queue
+            cpu = 0;                    //set cpu equal to 0
+            ioq_empty = false;          //set ioq_empty to false
+            cpu_ready_flag = true;      //set cpu ready flag to true
+            if ()   //if the queue is full
+                ioq_full = true;        //set ioq_full equal to true
+            cpu_complete_flag = false;  //set cpu_complete_flag to false
+        }
 
 }
 //*****************************************************************************************************
 void manageIODevice() {
-	// Receives – Nothing
-	// Task - Manages the IO device
-	// Returns - Nothing
+        // Receives – Nothing
+        // Task - Manages the IO device
+        // Returns - Nothing
+    
+    
+    if (!interrupt_flag)                        //if interrupt_flag equal to false
+    {
+        if (device == ioprocess)                //if device is equal to ioprocess
+        {
+            io_timer++;
+            if (io_timer == jType.IOBurst)      //if io timer is equal to IOBurst LENGTH
+            {
+                io_complete_flag = true;        //set io_complete_flag to true
+                device = 0;                     //set device equal to true
+                if ()   //if the next cpu burst length is <> 0
+                    interrupt_flag = true;      //set interrupt_flag to true
+                else
+                    finished_flag = true;       //set finished flag to true
+            }
+        }
+        else
+        {
+            if (!ioq_empty && io_device_flag)   //if ioq_empty is false and iodevice flag is true
+            {
+                //ioprocess equals head of the IOQ
+                device = process;               //set device equal to process
+                //delete job from the queue
+                if ()       //if the IOQ is now empty
+                    ioq_empty = true;           //set ioq_empty to true
+                io_timer = 0;                   //set io_timer equal to 0
+                io_device_flag = false;         //set io_device_flag to false
+            }
+        }
+    }
 
 }
 //*****************************************************************************************************
 void removeFinished() {
-	// Receives – Nothing
-	// Task - Removes finished processes
-	// Returns - Nothing
+        // Receives – Nothing
+        // Task - Removes finished processes
+        // Returns - Nothing
 
 }
+
+//*****************************************************************************************************
+
+bool addJobToQueue(jobType newJob)
+{
+        // Receives- newJob
+        // Task    - add a new job to the queue
+        // Returns - true or false if successfully added to queue
+    
+    return true;
+}
+//*****************************************************************************************************
+
+bool deleteJobFrom Queue(jobType &oldJob)
+{
+        // Receives- oldJob
+        // Task    - delete a job from the queue
+        // Returns - true or false for successful deletion and old job
+    
+    return true;
+}
+
+//*****************************************************************************************************
+
+void takeJobOutOfSystem()
+{
+        // Receives--------------------------
+        // Task    - take job out of the sytem
+        // Returns --------------------------
+}
+
+//*****************************************************************************************************
+
+void computeStats()
+{
+        // Receives-------------------------
+        // Task    - computes statistical data
+        // Returns -------------------------
+}
+
+//*****************************************************************************************************
+
+void processData()
+{
+        // Receives--------------------------
+        // Task    - process the data
+        // Returns --------------------------
+}
+
 //*****************************************************************************************************
 int main() {
-	// Receives – Nothing
-	// Task - Call each necessary function of the program in order
-	// Returns - Nothing		
+        // Receives – Nothing
+        // Task - Call each necessary function of the program in order
+        // Returns - Nothing
 	Header(dataOUT);// Print data header.
 
 	/*1.  Initialize variables
