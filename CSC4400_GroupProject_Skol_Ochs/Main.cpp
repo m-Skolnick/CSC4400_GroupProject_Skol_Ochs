@@ -1,6 +1,6 @@
 //************************************  PROGRAM IDENTIFICATION  ***************************************
 //*                                                                                                   *
-//*   PROGRAM FILE NAME:  Project2.cpp          ASSIGNMENT #:  2            Grade: _________          *
+//*   PROGRAM FILE NAME:  Main.cpp          ASSIGNMENT #:  2            Grade: _________              *
 //*                                                                                                   *
 //*   PROGRAM AUTHOR:     _______________________          _________________________                  *
 //*                           Brendan Ochs           &         Micaiah Skolnick                       *
@@ -157,10 +157,8 @@ void manageSTQ() {
         {
             //place process in the stq
             device = 0;//set device = 0
-            if(STQ is full)            // This seems weird... but this is what her psuedocode says
-            {
-                stq_full = true;
-                
+            if(stq_full){            // This seems weird... but this is what her psuedocode says
+                stq_full = true; 
             }
             
         }
@@ -168,12 +166,12 @@ void manageSTQ() {
         {
             //move process from LTQ to STQ
             stq_empty = false;
-            if (LTQ is now empty)
+            //if (LTQ is now empty)
             {
                 ltq_empty = true;
                 ltq_full = false;
             }
-            if (STQ is full)
+            //if (STQ is full)
             {
                 stq_full = true;
             }
@@ -220,13 +218,13 @@ void manageCPU() {
                 if (cpu == process)                //if cpu equals process
                 {
                     process_timer++;                    //increment process_timer
-                    if(process_timer == jType.CPUBurstLength[]) //if processtimer equals
+                   // if(process_timer == jType.CPUBurstLength[]) //if processtimer equals
                                                             //jtype.CpuBurstLength
                     {
                         cpu_complete_flag = true;       //set cpu_complete_flag to true
                         process_timer = 0;              //set process_timer equal to 0
                     }
-                    else
+                    //else
                     {
                         if(temp == process)         //if temp equals process
                         {
@@ -243,10 +241,12 @@ void manageCPU() {
                                 cpu = process;      //set cpu equal to process
                                 //delete job from queue
                                 stq_full = false;   //set stq_full to false
-                                if() //if STQ is now empty
-                                       stq_empty = true;    //set stq_empty to true
-                                cpu_ready_flag = false;  //set cpu_ready_flag to false
-                                process_timer = 0;       //set process_timer equal to 0
+                                //if() //if STQ is now empty
+								{
+									stq_empty = true;    //set stq_empty to true
+									cpu_ready_flag = false;  //set cpu_ready_flag to false
+									process_timer = 0;       //set process_timer equal to 0
+								}
                             }
                         }
                     }
@@ -265,15 +265,17 @@ void manageIOQ() {
     if(!ioq_empty)                      //if ioq_empty is false
         //increment IOQ wait counter for all processes in the queue
     if(cpu_complete_flag)               //if cpu_complete_flag is true
-        if(!ioq_full)                   //if ioq_full is false
-        {
-            //add the process to the tail of the queue
-            cpu = 0;                    //set cpu equal to 0
-            ioq_empty = false;          //set ioq_empty to false
-            cpu_ready_flag = true;      //set cpu ready flag to true
-            if ()   //if the queue is full
-                ioq_full = true;        //set ioq_full equal to true
-            cpu_complete_flag = false;  //set cpu_complete_flag to false
+		if (!ioq_full)                   //if ioq_full is false
+		{
+			//add the process to the tail of the queue
+			cpu = 0;                    //set cpu equal to 0
+			ioq_empty = false;          //set ioq_empty to false
+			cpu_ready_flag = true;      //set cpu ready flag to true
+			//if ()   //if the queue is full
+			{
+				ioq_full = true;        //set ioq_full equal to true
+				cpu_complete_flag = false;  //set cpu_complete_flag to false
+			}
         }
 
 }
@@ -281,21 +283,20 @@ void manageIOQ() {
 void manageIODevice() {
         // Receives – Nothing
         // Task - Manages the IO device
-        // Returns - Nothing
-    
+        // Returns - Nothing   
     
     if (!interrupt_flag)                        //if interrupt_flag equal to false
     {
         if (device == ioprocess)                //if device is equal to ioprocess
         {
             io_timer++;
-            if (io_timer == jType.IOBurst)      //if io timer is equal to IOBurst LENGTH
+            //if (io_timer == jobType.IOBurst)      //if io timer is equal to IOBurst LENGTH
             {
                 io_complete_flag = true;        //set io_complete_flag to true
                 device = 0;                     //set device equal to true
-                if ()   //if the next cpu burst length is <> 0
+                //if ()   //if the next cpu burst length is <> 0
                     interrupt_flag = true;      //set interrupt_flag to true
-                else
+               // else
                     finished_flag = true;       //set finished flag to true
             }
         }
@@ -306,10 +307,12 @@ void manageIODevice() {
                 //ioprocess equals head of the IOQ
                 device = process;               //set device equal to process
                 //delete job from the queue
-                if ()       //if the IOQ is now empty
-                    ioq_empty = true;           //set ioq_empty to true
-                io_timer = 0;                   //set io_timer equal to 0
-                io_device_flag = false;         //set io_device_flag to false
+                //if ()       //if the IOQ is now empty
+				{
+					ioq_empty = true;           //set ioq_empty to true
+					io_timer = 0;                   //set io_timer equal to 0
+					io_device_flag = false;         //set io_device_flag to false
+				}
             }
         }
     }
@@ -335,7 +338,7 @@ bool addJobToQueue(jobType newJob)
 }
 //*****************************************************************************************************
 
-bool deleteJobFrom Queue(jobType &oldJob)
+bool deleteJobFromQueue(jobType &oldJob)
 {
         // Receives- oldJob
         // Task    - delete a job from the queue
