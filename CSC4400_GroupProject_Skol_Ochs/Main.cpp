@@ -69,6 +69,25 @@ void Footer(ofstream &Outfile) {
 	lineCount += 4;
 	return;
 }
+//*****************************************************************************************************
+void printSummaryReport() {
+		// Receives – Nothing
+		// Task - Prints a summary of the statistics gathered for the chosen algorithm
+		// Returns - Nothing
+	dataOUT << "   Authors: Brendan Ochs and Micaiah Skolnick" << endl;
+	dataOUT << "   Algorithm used:                                ???????" << endl; 
+	dataOUT << "   Total time to complete the simulation:         ???????" << endl;
+	dataOUT << "   Total system time spent in context switching:  ?????" << endl;
+	dataOUT << "   CPU utilization rate:                          ????????" << endl;
+	dataOUT << "   Average Response Time for all jobs:            ?????" << endl;
+	dataOUT << "   Average Turnaround Time for all jobs:          ????" << endl;
+	dataOUT << "   System Throughput per 1000 clock ticks:        ???? " << endl;
+	dataOUT << "   Average LTQ wait time for all jobs:            ?????" << endl;
+	dataOUT << "   Average STQ wait time for all jobs:            ????" << endl;
+	dataOUT << "   Average IOQ wait time for all jobs:            ???" << endl;
+	lineCount += 11; //Increment the line count for each printed line
+
+}
 //************************************* END OF FUNCTION FOOTER  ***************************************
 void getData() {
 		// Receives – Nothing
@@ -101,13 +120,13 @@ bool addJobToSystem() {
         // Receives – Nothing
         // Task - If job has arrived, adds it to the system
         // Returns - A bool to indicate whether a job was added to the system
-
+	job_timer++; //Increment job timer
 	if (jList[currentJob].arrival == job_timer) {
-		job_flag = true;
-		//Record time of arrival
+		job_flag = true; //Signal LTQ of job arrival
+		   //Record time of arrival
 		job_timer = 0; //Reset job_timer to zero
-		job_count++; //Increment count
-		more_jobs++; //Increment more_jobs
+		job_count++; //Increment count (Total number of jobs ran)
+		more_jobs++; //Increment more_jobs (Number of jobs in the system)
 		return true; //If a job was added, return true
 	}
 	else {
@@ -122,16 +141,21 @@ void manageLTQ() {
 	while (job_flag != 0) {//While there are jobs to process (not sure if this is right)
                             // It isnt in the Psuedocode she gave us. But we can cross this
                             // bridge when we get to it.
-
 		if (ltq_empty == false) {
 			//Increment the wait counters for all processes in the queue.
+
+			//I'm not sure what wait counters are
 		}
 		if (job_flag && !ltq_full) {
-			//put the incoming job(s) in the queue
+			LTQ[ltqCount] = jList[currentJob];//put the incoming job(s) in the queue
+			ltqCount++; //Increment the ltq job count
 			job_flag = false;//set job_flag to false
 			ltq_empty = false; //set ltq_empty to false
 		}
-		//If the ltq que is full then set ltq_full to true
+		if (ltqCount == MAXALLOWEDINLTQ) //If the ltq que is full then set ltq_full to true
+		{
+			ltq_full = true;
+		}
 	}
 }
 //*****************************************************************************************************
@@ -155,24 +179,21 @@ void manageSTQ() {
         }
         else if (!stq_full)         //if stq_full is false
         {
-            //place process in the stq
-            device = 0;//set device = 0
-            if(stq_full){            // This seems weird... but this is what her psuedocode says
+			STQ[stqCount] = jList[currentJob]; //place process in the stq
+            device = 0; //set device = 0
+            if(stqCount == MAXALLOWEDINSTQ){ //If the count = the max allowed
                 stq_full = true; 
-            }
-            
+            }            
         }
         if(!stq_full && !ltq_empty) //if stq_full is false and ltq_empty is false
         {
-            //move process from LTQ to STQ
+				//move process from LTQ to STQ
             stq_empty = false;
-            //if (LTQ is now empty)
-            {
+			if (ltqCount == 0){ //If the LTQ is empty, indicate it
                 ltq_empty = true;
                 ltq_full = false;
             }
-            //if (STQ is full)
-            {
+            if (stqCount == MAXALLOWEDINSTQ) { //If the stq is full, indicate it
                 stq_full = true;
             }
         }
@@ -182,8 +203,7 @@ void manageSTQ() {
 void manageCPU() {
         // Receives – Nothing
         // Task - Manages the CPU
-        // Returns - Nothing
-    
+        // Returns - Nothing    
     if (suspend_flag)                               //if suspend_flag is true
     {
         suspend_timer--;                            //decrement suspend timer
@@ -395,20 +415,23 @@ int main() {
 		4.7  Increment the clock
 		**       	4.8  Check for incoming processes
 		**   	6.  Process the accumulated data.
-	*/
+	*/	
+
 	getData(); //Retrieve data from input file
 	addJobToSystem(); //Get a job into the system
-	//while () { //While jobs are being processed //Not sure how you tell if jobs are being processed
+	//while (!ltq_empty && !stq_empty) { //While jobs are being processed (I guess if stq and ltq are not empty)
 		manageLTQ(); //manage the Long Term Q
 		manageSTQ(); //manage the short term Q
 		manageCPU(); //manage the CPU
 		manageIOQ(); //manage the IO Queue
 		manageIODevice(); //manage the IO device
 		removeFinished(); //remove finished jobs
+
+		system_clock++; //Increment the clock
 	//}
-	system_clock++; //Increment the clock
 
 
+	printSummaryReport();
 	Footer(dataOUT); //Print footer. 
 	dataIN.close(); //Close input data file. 
 	dataOUT.close(); //Close output data file.
