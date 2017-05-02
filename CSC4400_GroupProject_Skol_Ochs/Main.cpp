@@ -120,18 +120,17 @@ bool addJobToSystem() {
         // Receives – Nothing
         // Task - If job has arrived, adds it to the system
         // Returns - A bool to indicate whether a job was added to the system
-	job_timer++; //Increment job timer
-	if (jList[currentJob].arrival == job_timer) {
-		job_flag = true; //Signal LTQ of job arrival
-		   //Record time of arrival
-		job_timer = 0; //Reset job_timer to zero
-		job_count++; //Increment count (Total number of jobs ran)
-		more_jobs++; //Increment more_jobs (Number of jobs in the system)
-		return true; //If a job was added, return true
-	}
-	else {
-		return false; //If a job wasn't added, return false
-	}
+	while (job_flag == false) { //Keep looping until a job has arrived		
+		if (jList[currentJob].arrival == job_timer) {
+			job_flag = true; //Signal LTQ of job arrival
+			   //Record time of arrival
+			job_timer = 0; //Reset job_timer to zero
+			job_count++; //Increment count (Total number of jobs ran)
+			more_jobs++; //Increment more_jobs (Number of jobs in the system)
+			return true; //If a job was added, return true
+		}
+		job_timer++; //Increment job timer
+	}	
 }
 //*****************************************************************************************************
 void manageLTQ() {
@@ -291,7 +290,7 @@ void manageIOQ() {
 			cpu = 0;                    //set cpu equal to 0
 			ioq_empty = false;          //set ioq_empty to false
 			cpu_ready_flag = true;      //set cpu ready flag to true
-			//if ()   //if the queue is full
+			if (ioqCount == MAXALLOWEDINIOQ)   //if the queue is full
 			{
 				ioq_full = true;        //set ioq_full equal to true
 				cpu_complete_flag = false;  //set cpu_complete_flag to false
@@ -419,7 +418,7 @@ int main() {
 
 	getData(); //Retrieve data from input file
 	addJobToSystem(); //Get a job into the system
-	//while (!ltq_empty && !stq_empty) { //While jobs are being processed (I guess if stq and ltq are not empty)
+	while (!ltq_empty && !stq_empty) { //While jobs are being processed (I guess if stq and ltq are not empty)
 		manageLTQ(); //manage the Long Term Q
 		manageSTQ(); //manage the short term Q
 		manageCPU(); //manage the CPU
@@ -427,8 +426,10 @@ int main() {
 		manageIODevice(); //manage the IO device
 		removeFinished(); //remove finished jobs
 
+		addJobToSystem(); //Get a job into the system
+
 		system_clock++; //Increment the clock
-	//}
+	}
 
 
 	printSummaryReport();
