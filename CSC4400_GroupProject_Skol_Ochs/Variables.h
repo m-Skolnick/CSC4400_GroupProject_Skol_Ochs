@@ -8,7 +8,7 @@ using namespace std;
 
 struct jobType {
 	int number, length, interArrival, IOBurst, CPUBurst[25], IOburstCount;
-
+	int currentIOBurst; //Holds the count of the current burst
 	//Added by Micaiah
 	int waitCounter;
 
