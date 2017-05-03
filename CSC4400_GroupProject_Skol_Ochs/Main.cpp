@@ -311,7 +311,7 @@ void manageIODevice() {
         // Receives – Nothing
         // Task - Manages the IO device
         // Returns - Nothing   
-    
+	int cpuBurst = 0; //Create 
     if (!interrupt_flag)                        //if interrupt_flag equal to false
     {
         if (device == ioprocess)                //if device is equal to ioprocess
@@ -321,7 +321,7 @@ void manageIODevice() {
             {
                 io_complete_flag = true;        //set io_complete_flag to true
                 device = 0;                     //set device equal to true
-                //if ()   //if the next cpu burst length is <> 0
+                //if()   //if the next cpu burst length is <> 0
                     interrupt_flag = true;      //set interrupt_flag to true
                // else
                     finished_flag = true; //set finished flag to true

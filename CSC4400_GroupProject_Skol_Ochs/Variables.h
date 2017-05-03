@@ -29,6 +29,7 @@ int ltqCount = 0; //Keeps track of the number of jobs in the LTQ
 int stqCount = 0; //Keeps track of the number of jobs in the STQ
 int ioqCount = 0; //Keeps track of the number of jobs in the IOQ
 
+
 jobType jList[MAXJOBNUMBER]; //Declare and initialize the list of jobs
 jobType STQ[MAXALLOWEDINSTQ]; //Declare and initialize list of jobs for short term Q
 jobType LTQ[MAXALLOWEDINLTQ]; //Declare and initialize list of jobs for long term Q
