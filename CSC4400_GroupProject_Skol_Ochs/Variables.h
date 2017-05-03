@@ -7,7 +7,7 @@
 using namespace std;
 
 struct jobType {
-	int number, length, arrival, IOBurst, CPUBurstLength[10], IOburstCount;
+	int number, length, interArrival, IOBurst, CPUBurst[25], IOburstCount;
 
 	//Added by Micaiah
 	int waitCounter;

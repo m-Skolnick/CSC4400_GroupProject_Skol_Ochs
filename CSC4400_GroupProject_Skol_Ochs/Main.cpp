@@ -98,12 +98,12 @@ void getData() {
 	while (newJob > 0) { //Read in jobs until the last negative value is reached
 		jList[i].number = newJob;
 		dataIN >> jList[i].length;
-		dataIN >> jList[i].arrival;
+		dataIN >> jList[i].interArrival;
 		dataIN >> jList[i].IOBurst;
 		dataIN >> burstLength; //Seed read the first burst length
 		int j = 0;
 		while (burstLength > 0) {
-			jList[i].CPUBurstLength[j]= burstLength;
+			jList[i].CPUBurst[j]= burstLength;
 			dataIN >> burstLength; // Read in the next burst length
 			j++; //Increment the burst count
 		}
@@ -121,7 +121,7 @@ bool addJobToSystem() {
         // Task - If job has arrived, adds it to the system
         // Returns - A bool to indicate whether a job was added to the system
 	while (job_flag == false) { //Keep looping until a job has arrived		
-		if (jList[currentJob].arrival == job_timer) {
+		if (jList[currentJob].interArrival == job_timer) {
 			job_flag = true; //Signal LTQ of job arrival
 			   //Record time of arrival
 			job_timer = 0; //Reset job_timer to zero
@@ -137,13 +137,13 @@ void manageLTQ() {
         // Receives – Nothing
         // Task - Manages the Long Term Q
         // Returns - Nothing
-	while (job_flag != 0) {//While there are jobs to process (not sure if this is right)
-                            // It isnt in the Psuedocode she gave us. But we can cross this
-                            // bridge when we get to it.
+	while (job_flag == true) {//While there are jobs to process
+
 		if (ltq_empty == false) {
 			//Increment the wait counters for all processes in the queue.
-
-			//I'm not sure what wait counters are
+			for (int i = 0; i < ltqCount; i++) {
+				LTQ[i].waitCounter++;
+			}
 		}
 		if (job_flag && !ltq_full) {
 			LTQ[ltqCount] = jList[currentJob];//put the incoming job(s) in the queue
@@ -164,7 +164,10 @@ void manageSTQ() {
         // Returns - Nothing
     if (!stq_empty)                 //if stq_empty is false
     {
-        //increment wait counters for all processes in the que
+        //increment wait counters for all processes in the queue
+		for (int i = 0; i < stqCount; i++) {
+			STQ[i].waitCounter++;
+		}
     }
     if (io_complete_flag)           //if io_complete_flag is true
     {
@@ -214,63 +217,63 @@ void manageCPU() {
         else if (temp == process)
         {
             //increment CPU wait counter
-            stop_flag = true;                       //set stop_flag to true
+            stop_flag = true;   //set stop_flag to true
         }
     }
-    if (!stop_flag)                                 //if stop_flag is false
+    if (!stop_flag)  //if stop_flag is false
     {
-            if(interrupt_flag)                      //if interrupt_flag is true
+        if(interrupt_flag)                      //if interrupt_flag is true
+        {
+            if(suspend_timer == 0)              //if suspend_timer equals 0
             {
-                if(suspend_timer == 0)              //if suspend_timer equals 0
+                if(cpu > 0)                     //if cpu is greater than 0
                 {
-                    if(cpu > 0)                     //if cpu is greater than 0
+                    temp = cpu;                 //set temp equal to 0
+                    cpu = 0;                    //set cpu equal to 0
+                }
+                suspend_timer = 3;              //set suspend_timer equal to 3
+                suspend_flag = false;           //set suspend timer to true
+            }
+        }
+        else
+        {
+            if (cpu == process) //if cpu equals process
+            {
+                process_timer++;                    //increment process_timer
+                // if(process_timer == jType.CPUBurstLength[]) //if processtimer equals
+                                                        //jtype.CpuBurstLength
+                {
+                    cpu_complete_flag = true;       //set cpu_complete_flag to true
+                    process_timer = 0;              //set process_timer equal to 0
+                }
+                //else
+                {
+                    if(temp == process)         //if temp equals process
                     {
-                        temp = cpu;                 //set temp equal to 0
-                        cpu = 0;                    //set cpu equal to 0
+                        cpu = process;          //cpu equals process
+                        //increment cpu wait counter
+                        temp = 0;               //set temp equal to 0
                     }
-                    suspend_timer = 3;              //set suspend_timer equal to 3
-                    suspend_flag = false;           //set suspend timer to true
+                    else
+                    {
+                        if(!stq_empty && cpu_ready_flag) //if stq_empty is false and
+                                                            //cpu_ready_flag is true
+                        {
+                            //set process equal to the head of the STQ
+                            cpu = process;      //set cpu equal to process
+                            //delete job from queue
+                            stq_full = false;   //set stq_full to false
+                            //if() //if STQ is now empty
+							{
+								stq_empty = true;    //set stq_empty to true
+								cpu_ready_flag = false;  //set cpu_ready_flag to false
+								process_timer = 0;       //set process_timer equal to 0
+							}
+                        }
+                    }
                 }
             }
-            else
-            {
-                if (cpu == process)                //if cpu equals process
-                {
-                    process_timer++;                    //increment process_timer
-                   // if(process_timer == jType.CPUBurstLength[]) //if processtimer equals
-                                                            //jtype.CpuBurstLength
-                    {
-                        cpu_complete_flag = true;       //set cpu_complete_flag to true
-                        process_timer = 0;              //set process_timer equal to 0
-                    }
-                    //else
-                    {
-                        if(temp == process)         //if temp equals process
-                        {
-                            cpu = process;          //cpu equals process
-                            //increment cpu wait counter
-                            temp = 0;               //set temp equal to 0
-                        }
-                        else
-                        {
-                            if(!stq_empty && cpu_ready_flag) //if stq_empty is false and
-                                                             //cpu_ready_flag is true
-                            {
-                                //set process equal to the head of the STQ
-                                cpu = process;      //set cpu equal to process
-                                //delete job from queue
-                                stq_full = false;   //set stq_full to false
-                                //if() //if STQ is now empty
-								{
-									stq_empty = true;    //set stq_empty to true
-									cpu_ready_flag = false;  //set cpu_ready_flag to false
-									process_timer = 0;       //set process_timer equal to 0
-								}
-                            }
-                        }
-                    }
-                }
-            }
+        }
     }
     stop_flag = false;                                  //set stop_flag equal to false
 
@@ -281,8 +284,13 @@ void manageIOQ() {
         // Task - Manages the Input Output Q
         // Returns - Nothing
     
-    if(!ioq_empty)                      //if ioq_empty is false
-        //increment IOQ wait counter for all processes in the queue
+	if (!ioq_empty)                      //if ioq_empty is false
+	{
+		for (int i = 0; i < ioqCount; i++){//increment IOQ wait counter for all processes in the queue
+			IOQ[i].waitCounter++;
+		}
+	}
+        
     if(cpu_complete_flag)               //if cpu_complete_flag is true
 		if (!ioq_full)                   //if ioq_full is false
 		{
@@ -316,21 +324,20 @@ void manageIODevice() {
                 //if ()   //if the next cpu burst length is <> 0
                     interrupt_flag = true;      //set interrupt_flag to true
                // else
-                    finished_flag = true;       //set finished flag to true
+                    finished_flag = true; //set finished flag to true
             }
         }
-        else
-        {
+        else{
             if (!ioq_empty && io_device_flag)   //if ioq_empty is false and iodevice flag is true
             {
                 //ioprocess equals head of the IOQ
                 device = process;               //set device equal to process
                 //delete job from the queue
-                //if ()       //if the IOQ is now empty
+                if(ioqCount == 0) //if the IOQ is now empty
 				{
-					ioq_empty = true;           //set ioq_empty to true
-					io_timer = 0;                   //set io_timer equal to 0
-					io_device_flag = false;         //set io_device_flag to false
+					ioq_empty = true; //set ioq_empty to true
+					io_timer = 0; //set io_timer equal to 0
+					io_device_flag = false; //set io_device_flag to false
 				}
             }
         }
@@ -418,7 +425,7 @@ int main() {
 
 	getData(); //Retrieve data from input file
 	addJobToSystem(); //Get a job into the system
-	while (!ltq_empty && !stq_empty) { //While jobs are being processed (I guess if stq and ltq are not empty)
+	while (!ltq_empty || !stq_empty || job_flag) { //While jobs are being processed (I guess if stq and ltq are not empty)
 		manageLTQ(); //manage the Long Term Q
 		manageSTQ(); //manage the short term Q
 		manageCPU(); //manage the CPU
