@@ -31,6 +31,13 @@ int ltqCount = 0; //Keeps track of the number of jobs in the LTQ
 int stqCount = 0; //Keeps track of the number of jobs in the STQ
 int ioqCount = 0; //Keeps track of the number of jobs in the IOQ
 
+//stats variables
+int contextSwitchTime = 0; //total time spent context switching
+float cpUtilizationRate = 0;
+float
+
+
+
 
 jobType jList[MAXJOBNUMBER]; //Declare and initialize the list of jobs
 jobType statList[MAXJOBNUMBER]; //Declare and initialize the list of jobs
