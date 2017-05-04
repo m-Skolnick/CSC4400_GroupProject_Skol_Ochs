@@ -69,6 +69,26 @@ void Footer(ofstream &Outfile) {
 	return;
 }
 //*****************************************************************************************************
+void computeStats() {
+	// Receives – Nothing
+	// Task - Calculates all of the processing statistics
+	// Returns - Nothing
+	int totLTQwait=0, totSTQwait=0, totIOQwait=0, totCPUwait=0;
+	for (int i = 0; i < job_count; i++) {
+		totLTQwait += statList[i].ltqWait;
+		totSTQwait += statList[i].stqWait;
+		totIOQwait += statList[i].ioWait;
+		totCPUwait += statList[i].cpuWait;
+	}
+
+	avgLTQwait = (float) totLTQwait / job_count;
+	avgSTQwait = (float) totSTQwait / job_count;
+	avgIOQwait = (float) totIOQwait / job_count;
+	avgCPUwait = (float) totCPUwait / job_count;
+
+
+
+}
 void printSummaryReport(ofstream &dataOUT) {
 		// Receives – Nothing
 		// Task - Prints a summary of the statistics gathered for the chosen algorithm
@@ -81,9 +101,9 @@ void printSummaryReport(ofstream &dataOUT) {
 	dataOUT << "   Average Response Time for all jobs:            ?????" << endl;
 	dataOUT << "   Average Turnaround Time for all jobs:          ????" << endl;
 	dataOUT << "   System Throughput per 1000 clock ticks:        ???? " << endl;
-	dataOUT << "   Average LTQ wait time for all jobs:            ?????" << endl;
-	dataOUT << "   Average STQ wait time for all jobs:            ????" << endl;
-	dataOUT << "   Average IOQ wait time for all jobs:            ???" << endl;
+	dataOUT << "   Average LTQ wait time for all jobs:            " << avgLTQwait << endl;
+	dataOUT << "   Average STQ wait time for all jobs:            " << avgSTQwait << endl;
+	dataOUT << "   Average IOQ wait time for all jobs:            " << avgIOQwait << endl;
 	lineCount += 11; //Increment the line count for each printed line
 
 }
@@ -184,7 +204,7 @@ void manageLTQ() {
 		if (ltq_empty == false) {
 			//Increment the wait counters for all processes in the queue.
 			for (int i = 0; i < ltqCount; i++) {
-				LTQ[i].waitCounter++;
+				statList[LTQ[i].number-1].ltqWait++;
 			}
 		}
 		if (job_flag && !ltq_full) {
@@ -206,7 +226,7 @@ void manageSTQ() {
     {
         //increment wait counters for all processes in the queue
 		for (int i = 0; i < stqCount; i++) {
-			STQ[i].waitCounter++;
+			statList[STQ[i].number - 1].stqWait++; 
 		}
     }
 	if (io_complete_flag)           //if io_complete_flag is true
@@ -256,7 +276,7 @@ void manageCPU() {
         }
         else if (temp == process) //A process is in CPU when interrupt occurred
         {
-			statList[process].waitCounter++;//increment CPU wait counter
+			statList[process].cpuWait++;//increment CPU wait counter
             stop_flag = true;   //set stop_flag to true
         }
     }
@@ -291,7 +311,7 @@ void manageCPU() {
 				if(temp == process)         //if temp equals process
 				{
 					cpu = process;          //cpu equals process
-					statList[process].waitCounter++;//increment CPU wait counter
+					statList[process].cpuWait++;//increment CPU wait counter
 					temp = 0;               //set temp equal to 0
 				}
 				else
@@ -323,7 +343,7 @@ void manageIOQ() {
 	if (!ioq_empty)                      //if ioq_empty is false
 	{
 		for (int i = 0; i < ioqCount; i++){//increment IOQ wait counter for all processes in the queue
-			IOQ[i].waitCounter++;
+			statList[IOQ[i].number-1].ioWait++; //Increment the io wait counter in the statistic list
 		}
 	}        
     if(cpu_complete_flag)               //if cpu_complete_flag is true
@@ -405,12 +425,6 @@ void takeJobOutOfSystem()
 
 //*****************************************************************************************************
 
-void computeStats()
-{
-        // Receives-------------------------
-        // Task    - computes statistical data
-        // Returns -------------------------
-}
 
 //*****************************************************************************************************
 
@@ -448,7 +462,7 @@ int main() {
 
 	addJobToSystem(); //Get a job into the system
 
-	while (jList[0].number!=-999 || !ltq_empty || !stq_empty || !ioq_empty) { //While jobs to process
+	while (jList[0].number!=-999) {// || !ltq_empty || !stq_empty || !ioq_empty) { //While jobs to process
 		manageLTQ(); //manage the Long Term Q
 		manageSTQ(); //manage the short term Q
 		manageCPU(); //manage the CPU
@@ -458,8 +472,8 @@ int main() {
 		addJobToSystem(); //Get a job into the system
 		system_clock++; //Increment the clock
 	}
-	
-	printSummaryReport(dataOUT5);
+	computeStats(); //Compute all of the statistical data
+	printSummaryReport(dataOUT5); //Print a report of stat. data
 	Footer(dataOUT5); //Print footer. 
 	dataIN.close(); //Close input data file. 
 	dataOUT5.close(); //Close output data file.

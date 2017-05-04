@@ -12,6 +12,7 @@ struct jobType {
 	int arrivalTime; //Holds the time at which the job entered the system
 	//Added by Micaiah
 	int waitCounter;
+	int ltqWait, stqWait, ioWait, cpuWait;
 
 };
 
@@ -38,8 +39,9 @@ float avgResponceTime = 0.0; //avg responce time for all jobs
 float avgTurnAroundTime = 0.0;  //avg turn aroung time for all jobs
 float systemThroughPut = 0.0;   //system throughput per 1000 clock ticks
 float avgLTQwait = 0.0;     //average LTQ wait time
-float avgStQwait = 0.0;     //average STQ wait time
-float angIOQwait = 0.0;     //average IOQ wait time
+float avgSTQwait = 0.0;     //average STQ wait time
+float avgIOQwait = 0.0;     //average IOQ wait time
+float avgCPUwait = 0.0;     //average CPU wait time
 
 
 
