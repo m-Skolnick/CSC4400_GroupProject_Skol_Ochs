@@ -3,8 +3,8 @@
 ---------------------------------- - ---------------------------------- - 
 
    Authors: Brendan Ochs and Micaiah Skolnick
-   Algorithm used:                                ???????
-   Total time to complete the simulation:         ???????
+   Algorithm used:                                First in first out (FIFO)
+   Total time to complete the simulation:         0
    Total system time spent in context switching:  ?????
    CPU utilization rate:                          ????????
    Average Response Time for all jobs:            ?????

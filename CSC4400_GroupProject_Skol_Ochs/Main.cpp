@@ -75,8 +75,8 @@ void printSummaryReport() {
 		// Task - Prints a summary of the statistics gathered for the chosen algorithm
 		// Returns - Nothing
 	dataOUT << "   Authors: Brendan Ochs and Micaiah Skolnick" << endl;
-	dataOUT << "   Algorithm used:                                ???????" << endl; 
-	dataOUT << "   Total time to complete the simulation:         ???????" << endl;
+	dataOUT << "   Algorithm used:                                First in first out (FIFO)" << endl; 
+	dataOUT << "   Total time to complete the simulation:         " << system_clock << endl;
 	dataOUT << "   Total system time spent in context switching:  ?????" << endl;
 	dataOUT << "   CPU utilization rate:                          ????????" << endl;
 	dataOUT << "   Average Response Time for all jobs:            ?????" << endl;
@@ -114,6 +114,20 @@ void getData() {
 		i++; // Increment the job count
 		dataIN >> ws >> newJob;
 	}
+}
+//*****************************************************************************************************
+
+bool deleteJobFromQueue(jobType oldQueue[60], int jobNumber)
+{
+	// Receives- oldJob
+	// Task    - delete a job from the queue
+	// Returns - true or false for successful deletion and old job
+
+	for (int i = 0; i < stqCount - 1; i++) { //delete job from queue
+		oldQueue[i] = oldQueue[i + 1];
+	}
+
+	return true;
 }
 //*****************************************************************************************************
 bool addJobToSystem() {
@@ -187,9 +201,12 @@ void manageSTQ() {
                 stq_full = true; 
             }            
         }
-        if(!stq_full && !ltq_empty) //if stq_full is false and ltq_empty is false
+        if(!stq_full && !ltq_empty) //if stq is not full, and ltq is not empty
         {
-				//move process from LTQ to STQ
+			STQ[stqCount] = LTQ[0];	//move process from LTQ to STQ
+			deleteJobFromQueue(LTQ,0);
+			stqCount++;
+			ltqCount--;
             stq_empty = false;
 			if (ltqCount == 0){ //If the LTQ is empty, indicate it
                 ltq_empty = true;
@@ -371,14 +388,6 @@ bool addJobToQueue(jobType newJob)
 }
 //*****************************************************************************************************
 
-bool deleteJobFromQueue(jobType &oldJob)
-{
-        // Receives- oldJob
-        // Task    - delete a job from the queue
-        // Returns - true or false for successful deletion and old job
-    
-    return true;
-}
 
 //*****************************************************************************************************
 
