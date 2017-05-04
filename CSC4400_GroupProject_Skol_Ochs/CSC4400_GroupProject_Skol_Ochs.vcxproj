@@ -116,7 +116,7 @@
     <ClInclude Include="Variables.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="dataOUT.txt" />
+    <Text Include="dataOUT5.txt" />
     <Text Include="Data_in.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

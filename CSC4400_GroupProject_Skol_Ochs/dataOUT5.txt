@@ -1,0 +1,14 @@
+   Authors: Brendan Ochs and Micaiah Skolnick
+   Algorithm used:                                First in first out (FIFO)
+   Total time to complete the simulation:         1052
+   Total system time spent in context switching:  ?????
+   CPU utilization rate:                          ?????
+   Average Response Time for all jobs:            ?????
+   Average Turnaround Time for all jobs:          ????
+   System Throughput per 1000 clock ticks:        ???? 
+   Average LTQ wait time for all jobs:            ?????
+   Average STQ wait time for all jobs:            ????
+   Average IOQ wait time for all jobs:            ???
+-------------------------------- - 
+         | END OF PROGRAM OUTPUT | 
+-------------------------------- - 

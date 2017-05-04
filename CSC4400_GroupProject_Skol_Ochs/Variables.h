@@ -49,7 +49,7 @@ jobType STQ[MAXALLOWEDINSTQ]; //Declare and initialize list of jobs for short te
 jobType LTQ[MAXALLOWEDINLTQ]; //Declare and initialize list of jobs for long term Q
 jobType IOQ[MAXALLOWEDINIOQ]; //Declare and initialize list of jobs for I/O Queue
 ifstream dataIN("Data_in.txt"); //Open the file containing data.
-ofstream dataOUT("dataOUT.txt"); //Create and open the file to write data to.
+ofstream dataOUT5("dataOUT5.txt"); //Create and open the file to write data to.
 
 //Variables given by Dr. Vandyke
 

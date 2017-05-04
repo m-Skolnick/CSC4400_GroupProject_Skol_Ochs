@@ -62,7 +62,6 @@ void Footer(ofstream &Outfile) {
         // Receives – the output file
         // Task - Prints the output salutation
         // Returns - Nothing
-	Outfile << endl;
 	Outfile << setw(35) << "-------------------------------- - " << endl;
 	Outfile << setw(35) << " | END OF PROGRAM OUTPUT | " << endl;
 	Outfile << setw(35) << "-------------------------------- - " << endl;
@@ -70,7 +69,7 @@ void Footer(ofstream &Outfile) {
 	return;
 }
 //*****************************************************************************************************
-void printSummaryReport() {
+void printSummaryReport(ofstream &dataOUT) {
 		// Receives – Nothing
 		// Task - Prints a summary of the statistics gathered for the chosen algorithm
 		// Returns - Nothing
@@ -133,10 +132,13 @@ void  deleteJobFromQueue(jobType oldQueue[], int jobIndex, int &length)
 	if (length == 1) {
 		oldQueue[0] = oldQueue[1];
 	}
-	for (int i = jobIndex; i < length; i++) { //delete job from queue
+	for (int i = jobIndex; i < length-1; i++) { //delete job from queue
 		oldQueue[i] = oldQueue[i + 1];
 	}
-	length--;
+	jobType newJob;
+	length--; //Decrement the Q length
+	oldQueue[length] = newJob; //Replace the job at the end of the Q with a new job
+
 }
 //*****************************************************************************************************
 void addJobToQueue(jobType newQueue[], jobType newJob, int &length)
@@ -424,7 +426,7 @@ int main() {
         // Receives – Nothing
         // Task - Call each necessary function of the program in order
         // Returns - Nothing
-	Header(dataOUT);// Print data header.
+	//Header(dataOUT);// Print data header.
 
 	/*1.  Initialize variables
 		**   	2.  Read in all processes from the input file.
@@ -441,11 +443,10 @@ int main() {
 		**       	4.8  Check for incoming processes
 		**   	6.  Process the accumulated data.
 	*/	
-
+	//dataOUT << "test output" << endl;
 	getData(); //Retrieve data from input file
-	
-	addJobToSystem(); //Get a job into the system
 
+	addJobToSystem(); //Get a job into the system
 
 	while (jList[0].number!=-999) { //While jobs to process
 		manageLTQ(); //manage the Long Term Q
@@ -457,12 +458,11 @@ int main() {
 		addJobToSystem(); //Get a job into the system
 		system_clock++; //Increment the clock
 	}
-
-
-	printSummaryReport();
-	Footer(dataOUT); //Print footer. 
+	
+	printSummaryReport(dataOUT5);
+	Footer(dataOUT5); //Print footer. 
 	dataIN.close(); //Close input data file. 
-	dataOUT.close(); //Close output data file.
+	dataOUT5.close(); //Close output data file.
 
 
 	return 0;
