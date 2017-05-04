@@ -34,10 +34,10 @@ int ioqCount = 0; //Keeps track of the number of jobs in the IOQ
 
 //stats variables
 int contextSwitchTime = 0; //total time spent context switching
-float cpUtilizationRate = 0.0;
+float cpuUtilization = 0.0;
 float avgResponceTime = 0.0; //avg responce time for all jobs
 float avgTurnAroundTime = 0.0;  //avg turn aroung time for all jobs
-float systemThroughPut = 0.0;   //system throughput per 1000 clock ticks
+float systemThroughput = 0.0;   //system throughput per 1000 clock ticks
 float avgLTQwait = 0.0;     //average LTQ wait time
 float avgSTQwait = 0.0;     //average STQ wait time
 float avgIOQwait = 0.0;     //average IOQ wait time
@@ -71,7 +71,7 @@ bool stop_flag = false; //Signals to stop CPU job processing
 bool suspend_flag = false; //Signals context switch to handle interrupt
 
 int cpu = 0; //integer to indicate which job has the CPU.            
-int job_count = 0; // keeps track of the number of processes ran 
+float job_count = 0; // keeps track of the number of processes ran 
 int device = 0; // integer to signal which process is in the I / O device
 int process = 1; //integer to indicate the process entering the CPU      
 int ioprocess = 1; //integer to indicate the process entering the I / O device

@@ -73,7 +73,7 @@ void computeStats() {
 	// Receives – Nothing
 	// Task - Calculates all of the processing statistics
 	// Returns - Nothing
-	int totLTQwait=0, totSTQwait=0, totIOQwait=0, totCPUwait=0;
+	float totLTQwait=0, totSTQwait=0, totIOQwait=0, totCPUwait=0;
 	for (int i = 0; i < job_count; i++) {
 		totLTQwait += statList[i].ltqWait;
 		totSTQwait += statList[i].stqWait;
@@ -86,7 +86,8 @@ void computeStats() {
 	avgIOQwait = (float) totIOQwait / job_count;
 	avgCPUwait = (float) totCPUwait / job_count;
 
-
+	systemThroughput = (float)(job_count / system_clock) * 1000;
+	cpuUtilization = (float)((system_clock-totCPUwait) / system_clock) * 100;
 
 }
 void printSummaryReport(ofstream &dataOUT) {
@@ -97,10 +98,10 @@ void printSummaryReport(ofstream &dataOUT) {
 	dataOUT << "   Algorithm used:                                First in first out (FIFO)" << endl; 
 	dataOUT << "   Total time to complete the simulation:         " << system_clock << endl;
 	dataOUT << "   Total system time spent in context switching:  ?????" << endl;
-	dataOUT << "   CPU utilization rate:                          ?????" << endl;
+	dataOUT << "   CPU utilization rate:                          " << cpuUtilization << endl;
 	dataOUT << "   Average Response Time for all jobs:            ?????" << endl;
 	dataOUT << "   Average Turnaround Time for all jobs:          ????" << endl;
-	dataOUT << "   System Throughput per 1000 clock ticks:        ???? " << endl;
+	dataOUT << "   System Throughput per 1000 clock ticks:        " << systemThroughput << endl;
 	dataOUT << "   Average LTQ wait time for all jobs:            " << avgLTQwait << endl;
 	dataOUT << "   Average STQ wait time for all jobs:            " << avgSTQwait << endl;
 	dataOUT << "   Average IOQ wait time for all jobs:            " << avgIOQwait << endl;
