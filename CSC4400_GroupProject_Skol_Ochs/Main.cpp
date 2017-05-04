@@ -78,7 +78,7 @@ void printSummaryReport() {
 	dataOUT << "   Algorithm used:                                First in first out (FIFO)" << endl; 
 	dataOUT << "   Total time to complete the simulation:         " << system_clock << endl;
 	dataOUT << "   Total system time spent in context switching:  ?????" << endl;
-	dataOUT << "   CPU utilization rate:                          ????????" << endl;
+	dataOUT << "   CPU utilization rate:           ?????" << endl;
 	dataOUT << "   Average Response Time for all jobs:            ?????" << endl;
 	dataOUT << "   Average Turnaround Time for all jobs:          ????" << endl;
 	dataOUT << "   System Throughput per 1000 clock ticks:        ???? " << endl;
