@@ -34,8 +34,12 @@ int ioqCount = 0; //Keeps track of the number of jobs in the IOQ
 //stats variables
 int contextSwitchTime = 0; //total time spent context switching
 float cpUtilizationRate = 0.0;
-float avgResponceTime = 0.0;
-
+float avgResponceTime = 0.0; //avg responce time for all jobs
+float avgTurnAroundTime = 0.0;  //avg turn aroung time for all jobs
+float systemThroughPut = 0.0;   //system throughput per 1000 clock ticks
+float avgLTQwait = 0.0;     //average LTQ wait time
+float avgStQwait = 0.0;     //average STQ wait time
+float angIOQwait = 0.0;     //average IOQ wait time
 
 
 
