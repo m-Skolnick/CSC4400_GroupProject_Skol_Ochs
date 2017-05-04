@@ -156,7 +156,7 @@ void addThenDelete(jobType newQueue[], int &newLength, jobType oldQueue[], int &
 	deleteJobFromQueue(oldQueue, jobNumber, oldLength);
 }
 //*****************************************************************************************************
-bool addJobToSystem() {
+void addJobToSystem() {
 			// Receives – Nothing
 			// Task - If job has arrived, adds it to the system
 			// Returns - A bool to indicate whether a job was added to the system
@@ -167,7 +167,7 @@ bool addJobToSystem() {
 			job_timer = 0; //Reset job_timer to zero
 			job_count++; //Increment count (Total number of jobs ran)
 			more_jobs++; //Increment more_jobs (Number of jobs in the system)
-			return true; //If a job was added, return true
+			return; //If a job was added, return true
 		}
 		job_timer++; //Increment job timer
 
@@ -452,7 +452,7 @@ int main() {
 
 	getData(); //Retrieve data from input file
 	
-	bool success = addJobToSystem(); //Get a job into the system
+	addJobToSystem(); //Get a job into the system
 
 
 	while (jList[0].number!=-999) { //While jobs to process
