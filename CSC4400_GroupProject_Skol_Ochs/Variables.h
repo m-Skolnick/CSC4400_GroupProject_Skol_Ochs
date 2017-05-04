@@ -7,7 +7,7 @@
 using namespace std;
 
 struct jobType {
-	int number, length, interArrival, IOBurst, CPUBurst[25], IOburstCount;
+	int number=-999, length, interArrival, IOBurst, CPUBurst[25], IOburstCount;
 	int currentIOBurst; //Holds the count of the current burst
 	//Added by Micaiah
 	int waitCounter;
@@ -23,6 +23,7 @@ const int MAXALLOWEDINLTQ = 60; //Set the max num of jobs allowed in long term Q
 const int MAXALLOWEDINSTQ = 30;
 const int MAXALLOWEDINIOQ = 30;
 
+int jobcount = 0;  //keeps track of how many jobs are actually read in to jList[maxjobnumber].
 int currentJob = 0;//keeps track of which job is currently in the system
 int system_clock = 0; //Keeps track of the system time
 int ltqCount = 0; //Keeps track of the number of jobs in the LTQ
@@ -31,6 +32,7 @@ int ioqCount = 0; //Keeps track of the number of jobs in the IOQ
 
 
 jobType jList[MAXJOBNUMBER]; //Declare and initialize the list of jobs
+jobType statList[MAXJOBNUMBER]; //Declare and initialize the list of jobs
 jobType STQ[MAXALLOWEDINSTQ]; //Declare and initialize list of jobs for short term Q
 jobType LTQ[MAXALLOWEDINLTQ]; //Declare and initialize list of jobs for long term Q
 jobType IOQ[MAXALLOWEDINIOQ]; //Declare and initialize list of jobs for I/O Queue

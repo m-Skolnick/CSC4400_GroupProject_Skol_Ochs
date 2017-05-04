@@ -112,8 +112,11 @@ void getData() {
 			return; //Exit the function if a burst length of -1 is reached
 		}
 		i++; // Increment the job count
+		jobcount++;
 		dataIN >> ws >> newJob;
 	}
+	for (int i = 0; i < jobcount; i++)
+		statList[i] = jList[i];
 }
 //*****************************************************************************************************
 
@@ -383,7 +386,6 @@ bool addJobToQueue(jobType newJob)
         // Receives- newJob
         // Task    - add a new job to the queue
         // Returns - true or false if successfully added to queue
-    
     return true;
 }
 //*****************************************************************************************************
@@ -441,7 +443,7 @@ int main() {
 
 	getData(); //Retrieve data from input file
 	addJobToSystem(); //Get a job into the system
-	while (!ltq_empty || !stq_empty || job_flag) { //While jobs are being processed (I guess if stq and ltq are not empty)
+	while (jList[0].number!=-999) { //While jobs are being processed (I guess if stq and ltq are not empty)
 		manageLTQ(); //manage the Long Term Q
 		manageSTQ(); //manage the short term Q
 		manageCPU(); //manage the CPU
