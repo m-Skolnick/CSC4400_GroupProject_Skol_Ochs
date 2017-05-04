@@ -78,7 +78,7 @@ void printSummaryReport() {
 	dataOUT << "   Algorithm used:                                First in first out (FIFO)" << endl; 
 	dataOUT << "   Total time to complete the simulation:         " << system_clock << endl;
 	dataOUT << "   Total system time spent in context switching:  ?????" << endl;
-	dataOUT << "   CPU utilization rate:           ?????" << endl;
+	dataOUT << "   CPU utilization rate:                          ?????" << endl;
 	dataOUT << "   Average Response Time for all jobs:            ?????" << endl;
 	dataOUT << "   Average Turnaround Time for all jobs:          ????" << endl;
 	dataOUT << "   System Throughput per 1000 clock ticks:        ???? " << endl;
@@ -108,21 +108,23 @@ void getData() {
 			j++; //Increment the burst count
 		}
 		jList[i].IOburstCount = j; // Set the number of bursts to the number of loops
+		
+		i++; // Increment the job counter
 		if (burstLength < 0) { //Burst length < 0 is sentinel
-			for (int i = 0; i < jobcount; i++) {
-				statList[i] = jList[i];
+							   //Copy the job list into a list from which values will not be deleted
+			for (int z = 0; z < i; z++) {
+				statList[z] = jList[z];
 			}
+			jobcount = i;
 			return; //Exit the function if a burst length of -1 is reached
 		}
-		i++; // Increment the job count
-		jobcount++;
 		dataIN >> ws >> newJob;
 	}
 	
 }
 //*****************************************************************************************************
 
-void  deleteJobFromQueue(jobType oldQueue[], int jobNumber, int &length)
+void  deleteJobFromQueue(jobType oldQueue[], int jobIndex, int &length)
 {
 	// Receives- Job from which queue is coming, job number, length of que
 	// Task    - delete a job from the queue
@@ -130,10 +132,8 @@ void  deleteJobFromQueue(jobType oldQueue[], int jobNumber, int &length)
 
 	if (length == 1) {
 		oldQueue[0] = oldQueue[1];
-		return;
 	}
-
-	for (int i = jobNumber; i < length - 1; i++) { //delete job from queue
+	for (int i = jobIndex; i < length; i++) { //delete job from queue
 		oldQueue[i] = oldQueue[i + 1];
 	}
 	length--;
@@ -145,15 +145,16 @@ void addJobToQueue(jobType newQueue[], jobType newJob, int &length)
 	// Task    - add a new job to the queue
 	// Returns - Nothing
 
-	newQueue[length++] = newJob;
+	newQueue[length] = newJob;
+	length++;
 }
-void addThenDelete(jobType newQueue[], int &newLength, jobType oldQueue[], int &oldLength, int jobNumber) {
+void addThenDelete(jobType newQueue[],int &newLength,jobType oldQueue[],int &oldLength, int jobIndex) {
 	// Receives- Q from which job is going and coming, Q lengths, and job number
 	// Task    - Add a new job to one queue and delete it from the other
 	// Returns - Nothing
 
-	addJobToQueue(newQueue, oldQueue[jobNumber], newLength);
-	deleteJobFromQueue(oldQueue, jobNumber, oldLength);
+	addJobToQueue(newQueue, oldQueue[jobIndex], newLength);
+	deleteJobFromQueue(oldQueue, jobIndex, oldLength);
 }
 //*****************************************************************************************************
 void addJobToSystem() {
@@ -218,7 +219,7 @@ void manageSTQ() {
 		}
 		else if (!stq_full)         //if stq_full is false
 		{
-			STQ[stqCount] = jList[currentJob]; //place process in the stq
+			addThenDelete(STQ, stqCount, STQ, stqCount, 0); //place process in the stq
 			device = 0; //set device = 0
 			if (stqCount == MAXALLOWEDINSTQ) { //If the count = the max allowed
 				stq_full = true;
@@ -253,7 +254,7 @@ void manageCPU() {
         }
         else if (temp == process) //A process is in CPU when interrupt occurred
         {
-			jList[process].waitCounter++;//increment CPU wait counter
+			statList[process].waitCounter++;//increment CPU wait counter
             stop_flag = true;   //set stop_flag to true
         }
     }
@@ -288,7 +289,7 @@ void manageCPU() {
 				if(temp == process)         //if temp equals process
 				{
 					cpu = process;          //cpu equals process
-					jList[process].waitCounter++;//increment CPU wait counter
+					statList[process].waitCounter++;//increment CPU wait counter
 					temp = 0;               //set temp equal to 0
 				}
 				else
@@ -297,16 +298,12 @@ void manageCPU() {
 					{
 						process = STQ[0].number; //set process equal to the head of the STQ
 						cpu = process;      //set cpu equal to process
-						for (int i = 0; i < stqCount-1; i++) { //delete job from queue
-							STQ[i] = STQ[i + 1];
-						}
-						stqCount--; //Decrement the number of processes in the STQ
+						deleteJobFromQueue(STQ, 0, stqCount); //delete job from queue
 						stq_full = false;   //set stq_full to false
 						if(stqCount==0) //if STQ is now empty
 						{
 							stq_empty = true;    //set stq_empty to true							
 						}
-						// Not sure if these two lines below should be inside of the above "if statement" *************
 						cpu_ready_flag = false;  //set cpu_ready_flag to false
 						process_timer = 0;       //set process_timer equal to 0
 					}
@@ -370,12 +367,7 @@ void manageIODevice() {
             {
 				ioprocess = 0; //set ioprocess equal to head of the IOQ
                 device = process; //set device equal to process		
-					//delete job from the queue
-				for (int i = 0; i < ioqCount-1; i++) {
-					IOQ[i] = IOQ[i + 1]; 
-
-				}
-				ioqCount--; //Decrement the number of jobs in the IOQ
+				deleteJobFromQueue(IOQ, 0, ioqCount);	//delete job from the queue
                 if(ioqCount == 0) //if the IOQ is now empty
 				{
 					ioq_empty = true; //set ioq_empty to true
