@@ -33,8 +33,8 @@ int ioqCount = 0; //Keeps track of the number of jobs in the IOQ
 
 //stats variables
 int contextSwitchTime = 0; //total time spent context switching
-float cpUtilizationRate = 0;
-float
+float cpUtilizationRate = 0.0;
+float avgResponceTime = 0.0;
 
 
 
