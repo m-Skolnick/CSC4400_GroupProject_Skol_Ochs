@@ -9,6 +9,7 @@ using namespace std;
 struct jobType {
 	int number=-999, length, interArrival, IOBurst, CPUBurst[25], IOburstCount;
 	int currentIOBurst; //Holds the count of the current burst
+	int arrivalTime; //Holds the time at which the job entered the system
 	//Added by Micaiah
 	int waitCounter;
 

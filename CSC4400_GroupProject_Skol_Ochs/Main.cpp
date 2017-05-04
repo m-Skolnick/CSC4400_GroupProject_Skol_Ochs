@@ -108,39 +108,62 @@ void getData() {
 			j++; //Increment the burst count
 		}
 		jList[i].IOburstCount = j; // Set the number of bursts to the number of loops
-		if (burstLength < 0) {
+		if (burstLength < 0) { //Burst length < 0 is sentinel
+			for (int i = 0; i < jobcount; i++) {
+				statList[i] = jList[i];
+			}
 			return; //Exit the function if a burst length of -1 is reached
 		}
 		i++; // Increment the job count
 		jobcount++;
 		dataIN >> ws >> newJob;
 	}
-	for (int i = 0; i < jobcount; i++)
-		statList[i] = jList[i];
+	
 }
 //*****************************************************************************************************
 
-bool deleteJobFromQueue(jobType oldQueue[60], int jobNumber)
+void  deleteJobFromQueue(jobType oldQueue[], int jobNumber, int &length)
 {
-	// Receives- oldJob
+	// Receives- Job from which queue is coming, job number, length of que
 	// Task    - delete a job from the queue
-	// Returns - true or false for successful deletion and old job
+	// Returns - Nothing
 
-	for (int i = 0; i < stqCount - 1; i++) { //delete job from queue
-		oldQueue[i] = oldQueue[i + 1];
+	if (length == 1) {
+		oldQueue[0] = oldQueue[1];
+		return;
 	}
 
-	return true;
+	for (int i = jobNumber; i < length - 1; i++) { //delete job from queue
+		oldQueue[i] = oldQueue[i + 1];
+	}
+	length--;
+}
+//*****************************************************************************************************
+void addJobToQueue(jobType newQueue[], jobType newJob, int &length)
+{
+	// Receives- old job, new job, and Q length
+	// Task    - add a new job to the queue
+	// Returns - Nothing
+
+	newQueue[length++] = newJob;
+}
+void addThenDelete(jobType newQueue[], int &newLength, jobType oldQueue[], int &oldLength, int jobNumber) {
+	// Receives- Q from which job is going and coming, Q lengths, and job number
+	// Task    - Add a new job to one queue and delete it from the other
+	// Returns - Nothing
+
+	addJobToQueue(newQueue, oldQueue[jobNumber], newLength);
+	deleteJobFromQueue(oldQueue, jobNumber, oldLength);
 }
 //*****************************************************************************************************
 bool addJobToSystem() {
-        // Receives – Nothing
-        // Task - If job has arrived, adds it to the system
-        // Returns - A bool to indicate whether a job was added to the system
+			// Receives – Nothing
+			// Task - If job has arrived, adds it to the system
+			// Returns - A bool to indicate whether a job was added to the system
 	
 		if (jList[currentJob].interArrival == job_timer) {
 			job_flag = true; //Signal LTQ of job arrival
-			   //Record time of arrival
+			statList[currentJob].arrivalTime = system_clock;  //Record time of arrival
 			job_timer = 0; //Reset job_timer to zero
 			job_count++; //Increment count (Total number of jobs ran)
 			more_jobs++; //Increment more_jobs (Number of jobs in the system)
@@ -154,7 +177,6 @@ void manageLTQ() {
         // Receives – Nothing
         // Task - Manages the Long Term Q
         // Returns - Nothing
-	while (job_flag == true) {//While there are jobs to process
 
 		if (ltq_empty == false) {
 			//Increment the wait counters for all processes in the queue.
@@ -163,8 +185,7 @@ void manageLTQ() {
 			}
 		}
 		if (job_flag && !ltq_full) {
-			LTQ[ltqCount] = jList[currentJob];//put the incoming job(s) in the queue
-			ltqCount++; //Increment the ltq job count
+			addThenDelete(LTQ, ltqCount, jList, jobcount, 0);//put the incoming job(s) in the queue
 			job_flag = false;//set job_flag to false
 			ltq_empty = false; //set ltq_empty to false
 		}
@@ -172,7 +193,6 @@ void manageLTQ() {
 		{
 			ltq_full = true;
 		}
-	}
 }
 //*****************************************************************************************************
 void manageSTQ() {
@@ -186,38 +206,35 @@ void manageSTQ() {
 			STQ[i].waitCounter++;
 		}
     }
-    if (io_complete_flag)           //if io_complete_flag is true
-    {
-        io_complete_flag = false;   //reset io_complete_flag to false
-        io_device_flag = true;      //set io_device_flag to true
-        if (finished_flag)          //if finished flag is true
-        {
-            more_jobs--;            //decrement more jobs (remove job from system)
-            finished_flag = false;
-            //collect data
-        }
-        else if (!stq_full)         //if stq_full is false
-        {
+	if (io_complete_flag)           //if io_complete_flag is true
+	{
+		io_complete_flag = false;   //reset io_complete_flag to false
+		io_device_flag = true;      //set io_device_flag to true
+		if (finished_flag)          //if finished flag is true
+		{
+			more_jobs--;            //decrement more jobs (remove job from system)
+			finished_flag = false;
+			//collect data
+		}
+		else if (!stq_full)         //if stq_full is false
+		{
 			STQ[stqCount] = jList[currentJob]; //place process in the stq
-            device = 0; //set device = 0
-            if(stqCount == MAXALLOWEDINSTQ){ //If the count = the max allowed
-                stq_full = true; 
-            }            
+			device = 0; //set device = 0
+			if (stqCount == MAXALLOWEDINSTQ) { //If the count = the max allowed
+				stq_full = true;
+			}
+		}
+	}
+    if(!stq_full && !ltq_empty) //if stq is not full, and ltq is not empty
+    {
+		addThenDelete(STQ, stqCount, LTQ, ltqCount, 0);	//move process from LTQ to STQ
+        stq_empty = false; //Set STQ empty to false to indicate that there is now a process in STQ
+		if (ltqCount == 0){ //If the LTQ is empty, indicate it
+            ltq_empty = true;
+            ltq_full = false;
         }
-        if(!stq_full && !ltq_empty) //if stq is not full, and ltq is not empty
-        {
-			STQ[stqCount] = LTQ[0];	//move process from LTQ to STQ
-			deleteJobFromQueue(LTQ,0);
-			stqCount++;
-			ltqCount--;
-            stq_empty = false;
-			if (ltqCount == 0){ //If the LTQ is empty, indicate it
-                ltq_empty = true;
-                ltq_full = false;
-            }
-            if (stqCount == MAXALLOWEDINSTQ) { //If the stq is full, indicate it
-                stq_full = true;
-            }
+        if (stqCount == MAXALLOWEDINSTQ) { //If the stq is full, indicate it
+            stq_full = true;
         }
     }
 }
@@ -252,7 +269,7 @@ void manageCPU() {
                     cpu = 0;                    //set cpu equal to 0
                 }
                 suspend_timer = 3;              //set suspend_timer equal to 3
-                suspend_flag = false;           //set suspend timer to true
+                suspend_flag = true;           //set suspend timer to true
             }
         }
         else
@@ -260,7 +277,7 @@ void manageCPU() {
 			if (cpu == process) //if cpu equals process
 			{
 				process_timer++;                    //increment process_timer
-				if (process_timer == jList[cpu].CPUBurst[0]) //if processtimer equals cpu burst length
+				if (process_timer == STQ[0].CPUBurst[0]) //if processtimer equals cpu burst length
 					//I set this to the first CPU Burst but I don't think it's right ************************************
 				{
 					cpu_complete_flag = true;       //set cpu_complete_flag to true
@@ -313,8 +330,7 @@ void manageIOQ() {
     if(cpu_complete_flag)               //if cpu_complete_flag is true
 		if (!ioq_full)                   //if ioq_full is false
 		{
-			IOQ[ioqCount] = jList[currentJob]; //add the process to the tail of the queue
-			ioqCount++;
+			addThenDelete(IOQ, ioqCount, STQ, stqCount, 0); //add the process to the tail of the queue
 			cpu = 0;                    //set cpu equal to 0
 			ioq_empty = false;          //set ioq_empty to false
 			cpu_ready_flag = true;      //set cpu ready flag to true
@@ -336,11 +352,11 @@ void manageIODevice() {
         if (device == ioprocess)               //if device is equal to ioprocess
         {
             io_timer++;
-            if (io_timer == jList[currentJob].currentIOBurst)//if io timer is equal to IOBurst LENGTH
+            if (io_timer == IOQ[0].currentIOBurst)//if io timer is equal to IOBurst LENGTH
             {
                 io_complete_flag = true; //set io_complete_flag to true
                 device = 0; //set device equal to 0
-				if (jList[currentJob].CPUBurst[io_timer + 1] > 0)//if the next cpu burst length is <> 0
+				if (IOQ[0].CPUBurst[io_timer + 1] > 0)//if the next cpu burst length is <> 0
 				{
 					interrupt_flag = true; //set interrupt_flag to true
 				}          
@@ -352,7 +368,7 @@ void manageIODevice() {
         else{
             if (!ioq_empty && io_device_flag)   //if ioq_empty is false and iodevice flag is true
             {
-				ioprocess = IOQ[0].number; //set ioprocess equal to head of the IOQ
+				ioprocess = 0; //set ioprocess equal to head of the IOQ
                 device = process; //set device equal to process		
 					//delete job from the queue
 				for (int i = 0; i < ioqCount-1; i++) {
@@ -381,14 +397,7 @@ void removeFinished() {
 
 //*****************************************************************************************************
 
-bool addJobToQueue(jobType newJob)
-{
-        // Receives- newJob
-        // Task    - add a new job to the queue
-        // Returns - true or false if successfully added to queue
-    return true;
-}
-//*****************************************************************************************************
+
 
 
 //*****************************************************************************************************
@@ -442,8 +451,11 @@ int main() {
 	*/	
 
 	getData(); //Retrieve data from input file
-	addJobToSystem(); //Get a job into the system
-	while (jList[0].number!=-999) { //While jobs are being processed (I guess if stq and ltq are not empty)
+	
+	bool success = addJobToSystem(); //Get a job into the system
+
+
+	while (jList[0].number!=-999) { //While jobs to process
 		manageLTQ(); //manage the Long Term Q
 		manageSTQ(); //manage the short term Q
 		manageCPU(); //manage the CPU
