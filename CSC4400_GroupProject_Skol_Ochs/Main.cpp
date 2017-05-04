@@ -366,16 +366,16 @@ void manageIODevice() {
         }
         else{
             if (!ioq_empty && io_device_flag)   //if ioq_empty is false and iodevice flag is true
-            {
+			{
 				ioprocess = 0; //set ioprocess equal to head of the IOQ
-                device = process; //set device equal to process		
+                device = process; //set device equal to process
 				deleteJobFromQueue(IOQ, 0, ioqCount);	//delete job from the queue
                 if(ioqCount == 0) //if the IOQ is now empty
 				{
 					ioq_empty = true; //set ioq_empty to true
-					io_timer = 0; //set io_timer equal to 0
-					io_device_flag = false; //set io_device_flag to false
 				}
+				io_timer = 0; //set io_timer equal to 0
+				io_device_flag = false; //set io_device_flag to false
             }
         }
     }
@@ -448,7 +448,7 @@ int main() {
 
 	addJobToSystem(); //Get a job into the system
 
-	while (jList[0].number!=-999) { //While jobs to process
+	while (jList[0].number!=-999 || !ltq_empty || !stq_empty || !ioq_empty) { //While jobs to process
 		manageLTQ(); //manage the Long Term Q
 		manageSTQ(); //manage the short term Q
 		manageCPU(); //manage the CPU
