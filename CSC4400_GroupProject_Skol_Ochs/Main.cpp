@@ -96,11 +96,12 @@ void printSummaryReport(ofstream &dataOUT) {
 		// Returns - Nothing
 	dataOUT << "   Authors: Brendan Ochs and Micaiah Skolnick" << endl;
 	dataOUT << "   Algorithm used:                                First in first out (FIFO)" << endl; 
+	dataOUT << "   Number of jobs processed:                      " << job_count << endl;
 	dataOUT << "   Total time to complete the simulation:         " << system_clock << endl;
 	dataOUT << "   Total system time spent in context switching:  ?????" << endl;
 	dataOUT << "   CPU utilization rate:                          " << cpuUtilization << endl;
 	dataOUT << "   Average Response Time for all jobs:            ?????" << endl;
-	dataOUT << "   Average Turnaround Time for all jobs:          ????" << endl;
+	dataOUT << "   Average Turnaround Time for all jobs:          ?????" << endl;
 	dataOUT << "   System Throughput per 1000 clock ticks:        " << systemThroughput << endl;
 	dataOUT << "   Average LTQ wait time for all jobs:            " << avgLTQwait << endl;
 	dataOUT << "   Average STQ wait time for all jobs:            " << avgSTQwait << endl;
@@ -139,43 +140,36 @@ void getData() {
 			return; //Exit the function if a burst length of -1 is reached
 		}
 		dataIN >> ws >> newJob;
-	}
-	
+	}	
 }
 //*****************************************************************************************************
-
-void  deleteJobFromQueue(jobType oldQueue[], int jobIndex, int &length)
-{
-	// Receives- Job from which queue is coming, job number, length of que
-	// Task    - delete a job from the queue
-	// Returns - Nothing
-
-	if (length == 1) {
+void  deleteJobFromQueue(jobType oldQueue[], int jobIndex, int &length){
+		// Receives- Job from which queue is coming, job number, length of que
+		// Task    - delete a job from the queue
+		// Returns - Nothing
+	if (length == 1) { //If there is only one job in the Q, move it to the front
 		oldQueue[0] = oldQueue[1];
 	}
 	for (int i = jobIndex; i < length-1; i++) { //delete job from queue
 		oldQueue[i] = oldQueue[i + 1];
 	}
-	jobType newJob;
 	length--; //Decrement the Q length
+	jobType newJob;
 	oldQueue[length] = newJob; //Replace the job at the end of the Q with a new job
 
 }
 //*****************************************************************************************************
-void addJobToQueue(jobType newQueue[], jobType newJob, int &length)
-{
-	// Receives- old job, new job, and Q length
-	// Task    - add a new job to the queue
-	// Returns - Nothing
-
+void addJobToQueue(jobType newQueue[], jobType newJob, int &length){
+		// Receives- old job, new job, and Q length
+		// Task    - add a new job to the end of a queue
+		// Returns - Nothing
 	newQueue[length] = newJob;
 	length++;
 }
 void addThenDelete(jobType newQueue[],int &newLength,jobType oldQueue[],int &oldLength, int jobIndex) {
-	// Receives- Q from which job is going and coming, Q lengths, and job number
-	// Task    - Add a new job to one queue and delete it from the other
-	// Returns - Nothing
-
+		// Receives- Q from which job is going and coming, Q lengths, and job number
+		// Task    - Add a new job to one queue and delete it from the other
+		// Returns - Nothing
 	addJobToQueue(newQueue, oldQueue[jobIndex], newLength);
 	deleteJobFromQueue(oldQueue, jobIndex, oldLength);
 }
@@ -183,51 +177,47 @@ void addThenDelete(jobType newQueue[],int &newLength,jobType oldQueue[],int &old
 void addJobToSystem() {
 			// Receives – Nothing
 			// Task - If job has arrived, adds it to the system
-			// Returns - A bool to indicate whether a job was added to the system
-	
-		if (jList[currentJob].interArrival == job_timer) {
-			job_flag = true; //Signal LTQ of job arrival
-			statList[currentJob].arrivalTime = system_clock;  //Record time of arrival
-			job_timer = 0; //Reset job_timer to zero
-			job_count++; //Increment count (Total number of jobs ran)
-			more_jobs++; //Increment more_jobs (Number of jobs in the system)
-			return; //If a job was added, return true
-		}
-		job_timer++; //Increment job timer
-
+			// Returns - A bool to indicate whether a job was added to the system	
+	job_timer++; //Increment job timer
+	if (jList[0].interArrival == job_timer) { //If a job has arrived
+		job_flag = true; //Signal LTQ of job arrival
+		statList[jList[0].number-1].arrivalTime = system_clock;  //Record time of arrival
+		job_timer = 0; //Reset job_timer to zero
+		job_count++; //Increment count (Total number of jobs ran)
+		more_jobs++; //Increment more_jobs (Number of jobs in the system)
+		return; //If a job was added, return true
+	}
 }
 //*****************************************************************************************************
 void manageLTQ() {
-        // Receives – Nothing
-        // Task - Manages the Long Term Q
-        // Returns - Nothing
-
-		if (ltq_empty == false) {
+		// Receives – Nothing
+		// Task - Manages the Long Term Q
+		// Returns - Nothing		
+	if (!ltq_empty) { //If the LTQ is not empty
 			//Increment the wait counters for all processes in the queue.
-			for (int i = 0; i < ltqCount; i++) {
-				statList[LTQ[i].number-1].ltqWait++;
-			}
+		for (int i = 0; i < ltqCount; i++) {
+			statList[LTQ[i].number-1].ltqWait++;
 		}
-		if (job_flag && !ltq_full) {
-			addThenDelete(LTQ, ltqCount, jList, jobcount, 0);//put the incoming job(s) in the queue
-			job_flag = false;//set job_flag to false
-			ltq_empty = false; //set ltq_empty to false
-		}
-		if (ltqCount == MAXALLOWEDINLTQ) //If the ltq que is full then set ltq_full to true
-		{
-			ltq_full = true;
-		}
+	}
+	if (job_flag && !ltq_full) { //If there is a job to enter, and the ltq is not full
+		addThenDelete(LTQ, ltqCount, jList, jobcount, 0);//put the incoming job(s) in the queue
+		job_flag = false;//set job_flag to false
+		ltq_empty = false; //set ltq_empty to false
+	}
+	if (ltqCount == MAXALLOWEDINLTQ) //If the ltq que is full then set ltq_full to true
+	{
+		ltq_full = true;
+	}
 }
 //*****************************************************************************************************
 void manageSTQ() {
         // Receives – Nothing
         // Task - Manages the Short Term Q
         // Returns - Nothing
-    if (!stq_empty)                 //if stq_empty is false
-    {
-        //increment wait counters for all processes in the queue
+    if (!stq_empty){ //If stq is not empty
+			//increment wait counters for all processes in the queue
 		for (int i = 0; i < stqCount; i++) {
-			statList[STQ[i].number - 1].stqWait++; 
+			statList[STQ[i].number-1].stqWait++;
 		}
     }
 	if (io_complete_flag)           //if io_complete_flag is true

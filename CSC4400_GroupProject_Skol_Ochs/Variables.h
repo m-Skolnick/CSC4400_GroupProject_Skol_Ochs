@@ -10,12 +10,9 @@ struct jobType {
 	int number=-999, length, interArrival, IOBurst, CPUBurst[25], IOburstCount;
 	int currentIOBurst; //Holds the count of the current burst
 	int arrivalTime; //Holds the time at which the job entered the system
-	//Added by Micaiah
-	int waitCounter;
-	int ltqWait, stqWait, ioWait, cpuWait;
-
+	int exitTime; //Holds the time at which the job exited the system
+	int ltqWait, stqWait, ioWait, cpuWait; //Wait counters for each queue
 };
-
 
 //Variables added by Micaiah
 int lineCount = 0; //Intialize the line counter to 0
