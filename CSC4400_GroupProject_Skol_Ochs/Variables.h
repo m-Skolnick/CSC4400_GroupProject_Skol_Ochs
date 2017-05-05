@@ -45,8 +45,6 @@ struct bonusStatType {
 bonusStatType interArrivals, jobLengths, ioBursts, cpuBursts;
 
 
-
-
 jobType jList[MAXJOBNUMBER]; //Declare and initialize the list of jobs
 jobType statList[MAXJOBNUMBER]; //Declare and initialize the list of jobs
 jobType STQ[MAXALLOWEDINSTQ]; //Declare and initialize list of jobs for short term Q

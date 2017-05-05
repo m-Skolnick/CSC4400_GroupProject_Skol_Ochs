@@ -31,10 +31,10 @@
 using namespace std;
 //*****************************************************************************************************
 void newPage(ofstream&dataOUT) {
-        // Receives – the output file
-        // Task - Insert blank lines to fill the rest of the current page
-        // Returns - Nothing
-        //Insert line ends until the end of page is reached
+        //File Name: Main.cpp
+        //Primary: Micaiah Skolnick / Contributing Brendan Ochs
+        //Date last revised: 05/12/17
+        //Inserts line ends until the end of page is reached
 	while (lineCount < LINESPERPAGE) {
 		dataOUT << endl;
 		lineCount++;
@@ -43,9 +43,11 @@ void newPage(ofstream&dataOUT) {
 }
 //*************************************  FUNCTION HEADER  *********************************************
 void Header(ofstream &Outfile)
-{       // Receives – the output file
-		// Task - Prints the output preamble
-		// Returns - Nothing
+{       //File Name: Main.cpp
+        //Primary: Micaiah Skolnick / Contributing Brendan Ochs
+        //Date last revised: 05/03/17
+		//Task - Prints the output preamble
+		//Returns - Nothing
 	Outfile << setw(35) << "Brendan Ochs & Micaiah Skolnick";
 	Outfile << setw(17) << "CSC 40600";
 	Outfile << setw(15) << "Section 11" << endl;
@@ -59,7 +61,9 @@ void Header(ofstream &Outfile)
 //************************************* END OF FUNCTION HEADER  ***************************************
 //*************************************  FUNCTION FOOTER  *********************************************
 void Footer(ofstream &Outfile) {
-        // Receives – the output file
+		//File Name: Main.cpp
+		//Primary: Micaiah Skolnick / Contributing Brendan Ochs
+		//Date last revised: 05/03/17
         // Task - Prints the output salutation
         // Returns - Nothing
 	Outfile << setw(35) << "-------------------------------- - " << endl;
@@ -70,9 +74,11 @@ void Footer(ofstream &Outfile) {
 }
 //*****************************************************************************************************
 void computeStats() {
-	// Receives – Nothing
-	// Task - Calculates all of the processing statistics
-	// Returns - Nothing
+		//File Name: Main.cpp
+		//Primary: Micaiah Skolnick / Contributing Brendan Ochs
+		//Date last revised: 05/05/17
+		// Task - Calculates all of the processing statistics
+		// Returns - Nothing
 	float totLTQwait=0, totSTQwait=0, totIOQwait=0, totCPUwait=0;
 	for (int i = 0; i < job_count; i++) {
 		totLTQwait += statList[i].ltqWait;
@@ -112,13 +118,13 @@ void computeStats() {
 	for (int i = 0; i < job_count; i++) {
 		interArrivals.variance += (statList[i].interArrival
 			- interArrivals.AVG)*(statList[i].interArrival - interArrivals.AVG);
-		jobLengths.variance += (statList[i].interArrival
-			- jobLengths.AVG)*(statList[i].interArrival - jobLengths.AVG);
+		jobLengths.variance += (statList[i].length
+			- jobLengths.AVG)*(statList[i].length - jobLengths.AVG);
 		for (int z = 0; z < statList[i].IOburstCount; z++) { //For each CPU burst
-			ioBursts.variance += (statList[i].interArrival
-				- ioBursts.AVG)*(statList[i].interArrival - ioBursts.AVG);
-			cpuBursts.variance += (statList[i].interArrival
-				- cpuBursts.AVG)*(statList[i].interArrival - cpuBursts.AVG);
+			ioBursts.variance += (statList[i].IOBurstLength
+				- ioBursts.AVG)*(statList[i].IOBurstLength - ioBursts.AVG);
+			cpuBursts.variance += (statList[i].CPUBurst[z]
+				- cpuBursts.AVG)*(statList[i].CPUBurst[z] - cpuBursts.AVG);
 		}
 	}
 	interArrivals.variance /= interArrivals.count; //Compute last step of variance
@@ -129,46 +135,68 @@ void computeStats() {
 	ioBursts.SD = sqrt(ioBursts.variance); //Calculate Standard Deviation
 	cpuBursts.variance /= cpuBursts.count; //Compute last step of variance
 	cpuBursts.SD = sqrt(cpuBursts.variance); //Calculate Standard Deviation
-
 }
 void printSummaryReport(ofstream &dataOUT) {
-		// Receives – Nothing
+		//File Name: Main.cpp
+		//Primary: Micaiah Skolnick / Contributing Brendan Ochs
+		//Date last revised: 05/05/17
 		// Task - Prints a summary of the statistics gathered for the chosen algorithm
 		// Returns - Nothing
-	dataOUT << "   Authors: Brendan Ochs and Micaiah Skolnick" << endl;
-	dataOUT << "   Algorithm used:                                First in first out (FIFO)" << endl; 
-	dataOUT << "   Number of jobs processed:                      " << job_count << endl;
-	dataOUT << "   Total time to complete the simulation:         " << system_clock << endl;
+	dataOUT << "   Authors:                   Brendan Ochs and Micaiah Skolnick" << endl;
+	dataOUT << "   Date Completed:                             May 05, 2017" << endl;
+	dataOUT << "   Algorithm used:                First in first out (FIFO)" << endl; 
+	dataOUT << "   Number of jobs processed:                      " << fixed<< setprecision(2) <<
+		right << setw (9) << job_count << endl;
+	dataOUT << "   Total time to complete the simulation:         " << fixed << setprecision(2) <<
+		right << setw(9) << system_clock << endl;
 	dataOUT << "   Total system time spent in context switching:  ?????" << endl;
-	dataOUT << "   CPU utilization rate:                          " << cpuUtilization << endl;
+	dataOUT << "   CPU utilization rate:                          " << fixed << setprecision(2) <<
+		right << setw(9) << cpuUtilization << endl;
 	dataOUT << "   Average Response Time for all jobs:            ?????" << endl;
 	dataOUT << "   Average Turnaround Time for all jobs:          ?????" << endl;
-	dataOUT << "   System Throughput per 1000 clock ticks:        " <<
-		setprecision(5) << systemThroughput << endl;
-	dataOUT << "   Average LTQ wait time for all jobs:            " << avgLTQwait << endl;
-	dataOUT << "   Average STQ wait time for all jobs:            " << avgSTQwait << endl;
-	dataOUT << "   Average IOQ wait time for all jobs:            " << avgIOQwait << endl;
+	dataOUT << "   System Throughput per 1000 clock ticks:        " << fixed << setprecision(2) <<
+		right << setw(9) << fixed <<
+		setprecision(2) << systemThroughput << endl;
+	dataOUT << "   Average LTQ wait time for all jobs:            " << fixed << setprecision(2) <<
+		right << setw(9) << avgLTQwait << endl;
+	dataOUT << "   Average STQ wait time for all jobs:            " << fixed << setprecision(2) <<
+		right << setw(9) << avgSTQwait << endl;
+	dataOUT << "   Average IOQ wait time for all jobs:            " << fixed << setprecision(2) <<
+		right << setw(9) << avgIOQwait << endl << endl;
 
 		//Print statistics for extra credit one
 	dataOUT << "EXTRA CREDIT ONE:" << endl;
-	dataOUT << "   Sum of all inter arrival times:                " << interArrivals.sum << endl;
-	dataOUT << "   Average of all inter arrival times:            " << interArrivals.AVG << endl;
-	dataOUT << "   Variance of all inter arrival times:           " << interArrivals.variance << endl;
-	dataOUT << "   Standard deviation of all inter arrival times: " << interArrivals.SD << endl;
-	dataOUT << "   Average of all job lengths:                    " << jobLengths.AVG << endl;
-	dataOUT << "   Variance of all job lengths:                   " << jobLengths.variance << endl;
-	dataOUT << "   Standard deviation of all job lengths:         " << jobLengths.SD << endl;
-	dataOUT << "   Average of all I/O bursts:                     " << ioBursts.AVG << endl;
-	dataOUT << "   Variance of all I/O bursts:                    " << ioBursts.variance << endl;
-	dataOUT << "   Standard deviation of all I/O bursts:          " << ioBursts.SD << endl;
-	dataOUT << "   Average of all CPU bursts:                     " << cpuBursts.AVG << endl;
-	dataOUT << "   Variance of all CPU bursts:                    " << cpuBursts.variance << endl;
-	dataOUT << "   Standard deviation of all CPU bursts:          " << cpuBursts.SD << endl;
+	dataOUT << "   Average of all inter arrival times:            " << fixed << setprecision(2) <<
+		right << setw(9) << interArrivals.AVG << endl;
+	dataOUT << "   Variance of all inter arrival times:           " << fixed << setprecision(2) <<
+		right << setw(9) << interArrivals.variance << endl;
+	dataOUT << "   Standard deviation of all inter arrival times: " << fixed << setprecision(2) <<
+		right << setw(9) << interArrivals.SD << endl;
+	dataOUT << "   Average of all job lengths:                    " << fixed << setprecision(2) <<
+		right << setw(9) << jobLengths.AVG << endl;
+	dataOUT << "   Variance of all job lengths:                   " << fixed << setprecision(2) <<
+		right << setw(9) << jobLengths.variance << endl;
+	dataOUT << "   Standard deviation of all job lengths:         " << fixed << setprecision(2) <<
+		right << setw(9) << jobLengths.SD << endl;
+	dataOUT << "   Average of all I/O bursts:                     " << fixed << setprecision(2) <<
+		right << setw(9) << ioBursts.AVG << endl;
+	dataOUT << "   Variance of all I/O bursts:                    " << fixed << setprecision(2) <<
+		right << setw(9) << ioBursts.variance << endl;
+	dataOUT << "   Standard deviation of all I/O bursts:          " << fixed << setprecision(2) <<
+		right << setw(9) << ioBursts.SD << endl;
+	dataOUT << "   Average of all CPU bursts:                     " << fixed << setprecision(2) <<
+		right << setw(9) << cpuBursts.AVG << endl;
+	dataOUT << "   Variance of all CPU bursts:                    " << fixed << setprecision(2) <<
+		right << setw(9) << cpuBursts.variance << endl;
+	dataOUT << "   Standard deviation of all CPU bursts:          " << fixed << setprecision(2) <<
+		right << setw(9) << cpuBursts.SD << endl;
 
 }
 //************************************* END OF FUNCTION FOOTER  ***************************************
 void getData() {
-		// Receives – Nothing
+		//File Name: Main.cpp
+		//Primary: Micaiah Skolnick / Contributing Brendan Ochs
+		//Date last revised: 05/05/17
 		// Task - Reads all of the data from input file into a job array
 		// Returns - Nothing
 	int i = 0, newJob = 0, burstLength = 0;
@@ -201,8 +229,10 @@ void getData() {
 }
 //*****************************************************************************************************
 void  deleteJobFromQueue(jobType oldQueue[], int jobIndex, int &length){
-		// Receives- Job from which queue is coming, job number, length of que
-		// Task    - delete a job from the queue
+		//File Name: Main.cpp
+		//Primary: Micaiah Skolnick / Contributing Brendan Ochs
+		//Date last revised: 05/05/17
+		// Task    - delete a job from a queue
 		// Returns - Nothing
 	if (length == 1) { //If there is only one job in the Q, move it to the front
 		oldQueue[0] = oldQueue[1];
@@ -217,6 +247,9 @@ void  deleteJobFromQueue(jobType oldQueue[], int jobIndex, int &length){
 }
 //*****************************************************************************************************
 void addJobToQueue(jobType newQueue[], jobType newJob, int &length){
+		//File Name: Main.cpp
+		//Primary: Micaiah Skolnick / Contributing Brendan Ochs
+		//Date last revised: 05/05/17 
 		// Receives- old job, new job, and Q length
 		// Task    - add a new job to the end of a queue
 		// Returns - Nothing
@@ -232,9 +265,12 @@ void addThenDelete(jobType newQueue[],int &newLength,jobType oldQueue[],int &old
 }
 //*****************************************************************************************************
 void addJobToSystem() {
-			// Receives – Nothing
-			// Task - If job has arrived, adds it to the system
-			// Returns - A bool to indicate whether a job was added to the system	
+		//File Name: Main.cpp
+		//Primary: Micaiah Skolnick / Contributing Brendan Ochs
+		//Date last revised: 05/05/17
+		// Receives – Nothing
+		// Task - If job has arrived, adds it to the system
+		// Returns - A bool to indicate whether a job was added to the system	
 	job_timer++; //Increment job timer
 	if (jList[0].interArrival == job_timer) { //If a job has arrived
 		job_flag = true; //Signal LTQ of job arrival
@@ -247,6 +283,9 @@ void addJobToSystem() {
 }
 //*****************************************************************************************************
 void manageLTQ() {
+		//File Name: Main.cpp
+		//Primary: Micaiah Skolnick / Contributing Brendan Ochs
+		//Date last revised: 05/05/17	
 		// Receives – Nothing
 		// Task - Manages the Long Term Q
 		// Returns - Nothing		
@@ -268,7 +307,10 @@ void manageLTQ() {
 }
 //*****************************************************************************************************
 void manageSTQ() {
-        // Receives – Nothing
+		//File Name: Main.cpp
+		//Primary: Micaiah Skolnick / Contributing Brendan Ochs
+		//Date last revised: 05/05/17
+		// Receives – Nothing
         // Task - Manages the Short Term Q
         // Returns - Nothing
     if (!stq_empty){ //If stq is not empty
@@ -311,9 +353,12 @@ void manageSTQ() {
 }
 //*****************************************************************************************************
 void manageCPU() {
-        // Receives – Nothing
-        // Task - Manages the CPU
-        // Returns - Nothing    
+		//File Name: Main.cpp
+		//Primary: Brendan Ochs / Contributing Micaiah Skolnick
+		//Date last revised: 05/04/17
+        //Receives – Nothing
+        //Task - Manages the CPU
+        //Returns - Nothing    
     if (suspend_flag) //if suspend_flag is true
 	{
         suspend_timer--; //decrement suspend timer
@@ -349,8 +394,10 @@ void manageCPU() {
 			{
 				process_timer++;                    //increment process_timer
 				if (process_timer == STQ[0].CPUBurst[0]) //if processtimer equals cpu burst length
-					//I set this to the first CPU Burst but I don't think it's right ************************************
 				{
+					for (int i = 0; i < STQ[0].IOburstCount; i++) { //Delete the cpu burst from list
+						STQ[0].CPUBurst[i] = STQ[0].CPUBurst[i+1];
+					}
 					cpu_complete_flag = true;       //set cpu_complete_flag to true
 					process_timer = 0;              //set process_timer equal to 0
 				}
@@ -385,6 +432,9 @@ void manageCPU() {
 }
 //*****************************************************************************************************
 void manageIOQ() {
+		//File Name: Main.cpp
+		//Primary: Brendan Ochs / Contributing Micaiah Skolnick
+		//Date last revised: 05/04/17
         // Receives – Nothing
         // Task - Manages the Input Output Q
         // Returns - Nothing    
@@ -411,6 +461,9 @@ void manageIOQ() {
 }
 //*****************************************************************************************************
 void manageIODevice() {
+		//File Name: Main.cpp
+		//Primary: Brendan Ochs / Contributing Micaiah Skolnick
+		//Date last revised: 05/05/17
         // Receives – Nothing
         // Task - Manages the IO device
         // Returns - Nothing   
@@ -447,58 +500,31 @@ void manageIODevice() {
             }
         }
     }
-
-}
-//*****************************************************************************************************
-void removeFinished() {
-        // Receives – Nothing
-        // Task - Removes finished processes
-        // Returns - Nothing
-
 }
 //*****************************************************************************************************
 int main() {
+		//File Name: Main.cpp
+		//Primary: Micaiah Skolnick / Contributing Brendan Ochs
+		//Date last revised: 05/04/17
         // Receives – Nothing
         // Task - Call each necessary function of the program in order
         // Returns - Nothing
-	//Header(dataOUT);// Print data header.
-
-	/*1.  Initialize variables
-		**   	2.  Read in all processes from the input file.
-		**   	3.  Enter the first process into the system.
-		4.  Increment the clock
-		5.  While(jobs are being processed)
-		**       	4.1  Manage the LTQ
-		**       	4.2  Manage the STQ
-		**       	4.3  Manage the CPU
-		**       	4.4  Manage the I / O Queue
-		**       	4.5  Manage the I / O Device
-		**       	4.6  Remove finished jobs
-		4.7  Increment the clock
-		**       	4.8  Check for incoming processes
-		**   	6.  Process the accumulated data.
-	*/	
-	//dataOUT << "test output" << endl;
 	getData(); //Retrieve data from input file
-
 	addJobToSystem(); //Get a job into the system
-
-	while (jList[0].number!=-999){ // || !ltq_empty || !stq_empty || !ioq_empty) { //While jobs to process
+	while (jList[0].number!=-999){ // While jobs to process
 		manageLTQ(); //manage the Long Term Q
 		manageSTQ(); //manage the short term Q
 		manageCPU(); //manage the CPU
 		manageIOQ(); //manage the IO Queue
 		manageIODevice(); //manage the IO device
-		removeFinished(); //remove finished jobs
 		addJobToSystem(); //Get a job into the system
 		system_clock++; //Increment the clock
 	}
 	computeStats(); //Compute all of the statistical data
+	Header(dataOUT5); //Print a data header
 	printSummaryReport(dataOUT5); //Print a report of stat. data
 	Footer(dataOUT5); //Print footer. 
 	dataIN.close(); //Close input data file. 
 	dataOUT5.close(); //Close output data file.
-
-
 	return 0;
 }
