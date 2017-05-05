@@ -69,6 +69,18 @@ void Footer(ofstream &Outfile) {
 	return;
 }
 //*****************************************************************************************************
+void computeAvgVarianceSD(bonusStatType &bonusStat) {
+		// Receives – Nothing
+		// Task - Calculates all of the processing statistics
+		// Returns - Nothing
+	bonusStat.AVG = bonusStat.total / bonusStat.count;
+	for (int i = 0; i < jobcount; i++) { //Sum all of the squares from the mean as first step of variance
+		bonusStat.variance += (statList[i].interArrival
+			- bonusStat.AVG)*(statList[i].interArrival - bonusStat.AVG);
+	}
+	bonusStat.variance /= bonusStat.count; //Compute last step of variance
+	bonusStat.SD = sqrt(bonusStat.variance); //Calculate Standard Deviation
+}
 void computeStats() {
 	// Receives – Nothing
 	// Task - Calculates all of the processing statistics
@@ -88,6 +100,26 @@ void computeStats() {
 
 	systemThroughput = (float)(job_count / system_clock) * 1000;
 	cpuUtilization = (float)((system_clock-totCPUwait) / system_clock) * 100;
+	avgResponseTime = 3;
+
+		//Calculations for extra credit one:
+	for (int i = 0; i < job_count; i++) {
+		interArrivals.total += statList[i].interArrival;//add to the total of inter-arrival time
+		jobLengths.total += statList[i].length; //Add to the total of job lengths
+		ioBursts.count += statList[i].IOburstCount; //Add to the IO burst count
+		cpuBursts.count = ioBursts.count; //IO burst count and CPU burst count are the same thing
+		for (int z = 0; z < statList[i].IOburstCount; i++) { //For each CPU burst
+			cpuBursts.total += statList[i].CPUBurst[z]; //Add this cpu burst to the total
+			ioBursts.total += statList[i].IOBurstLength; //Add to the total IO burst length
+		}	
+	}
+	interArrivals.count = job_count; //set the counts for interarrivals and job lengths
+	jobLengths.count = job_count;
+
+	computeAvgVarianceSD(interArrivals);
+	computeAvgVarianceSD(jobLengths);
+	computeAvgVarianceSD(ioBursts);
+	computeAvgVarianceSD(cpuBursts);
 
 }
 void printSummaryReport(ofstream &dataOUT) {
@@ -102,11 +134,26 @@ void printSummaryReport(ofstream &dataOUT) {
 	dataOUT << "   CPU utilization rate:                          " << cpuUtilization << endl;
 	dataOUT << "   Average Response Time for all jobs:            ?????" << endl;
 	dataOUT << "   Average Turnaround Time for all jobs:          ?????" << endl;
-	dataOUT << "   System Throughput per 1000 clock ticks:        " << systemThroughput << endl;
+	dataOUT << "   System Throughput per 1000 clock ticks:        " <<
+		setprecision(5) << systemThroughput << endl;
 	dataOUT << "   Average LTQ wait time for all jobs:            " << avgLTQwait << endl;
 	dataOUT << "   Average STQ wait time for all jobs:            " << avgSTQwait << endl;
 	dataOUT << "   Average IOQ wait time for all jobs:            " << avgIOQwait << endl;
-	lineCount += 11; //Increment the line count for each printed line
+
+		//Print statistics for extra credit one
+	dataOUT << "EXTRA CREDIT ONE:" << endl;
+	dataOUT << "   Average of all inter arrival times:            " << interArrivals.AVG << endl;
+	dataOUT << "   Variance of all inter arrival times:           " << interArrivals.variance << endl;
+	dataOUT << "   Standard deviation of all inter arrival times: " << interArrivals.SD << endl;
+	dataOUT << "   Average of all job lengths:                    " << jobLengths.AVG << endl;
+	dataOUT << "   Variance of all job lengths:                   " << jobLengths.variance << endl;
+	dataOUT << "   Standard deviation of all job lengths:         " << jobLengths.SD << endl;
+	dataOUT << "   Average of all I/O bursts:                     " << ioBursts.AVG << endl;
+	dataOUT << "   Variance of all I/O bursts:                    " << ioBursts.variance << endl;
+	dataOUT << "   Standard deviation of all I/O bursts:          " << ioBursts.SD << endl;
+	dataOUT << "   Average of all CPU bursts:                     " << cpuBursts.AVG << endl;
+	dataOUT << "   Variance of all CPU bursts:                    " << cpuBursts.variance << endl;
+	dataOUT << "   Standard deviation of all CPU bursts:          " << cpuBursts.SD << endl;
 
 }
 //************************************* END OF FUNCTION FOOTER  ***************************************
@@ -120,7 +167,7 @@ void getData() {
 		jList[i].number = newJob;
 		dataIN >> jList[i].length;
 		dataIN >> jList[i].interArrival;
-		dataIN >> jList[i].IOBurst;
+		dataIN >> jList[i].IOBurstLength;
 		dataIN >> burstLength; //Seed read the first burst length
 		int j = 0;
 		while (burstLength > 0) {
@@ -279,7 +326,7 @@ void manageCPU() {
             {
                 if(cpu > 0)                     //if cpu is greater than 0
                 {
-                    temp = cpu;                 //set temp equal to 0
+                    temp = cpu;                 //set temp equal to cpu
                     cpu = 0;                    //set cpu equal to 0
                 }
                 suspend_timer = 3;              //set suspend_timer equal to 3
@@ -362,11 +409,11 @@ void manageIODevice() {
         if (device == ioprocess)               //if device is equal to ioprocess
         {
             io_timer++; //Increment the IO timer
-            if (io_timer == IOQ[0].currentIOBurst)//If io timer is equal to IOBurst LENGTH
+            if (io_timer == IOQ[0].IOBurstLength)//If io timer is equal to IOBurst LENGTH
             {
                 io_complete_flag = true; //set io_complete_flag to true
                 device = 0; //set device equal to 0
-				if (IOQ[0].CPUBurst[io_timer + 1] > 0)//if the next cpu burst length is <> 0
+				if (IOQ[0].CPUBurst[0] > 0)//if the next cpu burst length is <> 0
 				{
 					interrupt_flag = true; //set interrupt_flag to true
 				}          
@@ -378,9 +425,9 @@ void manageIODevice() {
         else{
             if (!ioq_empty && io_device_flag)   //if ioq_empty is false and iodevice flag is true
 			{
-				ioprocess = 0; //set ioprocess equal to head of the IOQ
+				ioprocess = IOQ[0].number; //set ioprocess equal to head of the IOQ
                 device = process; //set device equal to process
-				deleteJobFromQueue(IOQ, 0, ioqCount);	//delete job from the queue
+				deleteJobFromQueue(IOQ, 0, ioqCount); //delete job from the queue
                 if(ioqCount == 0) //if the IOQ is now empty
 				{
 					ioq_empty = true; //set ioq_empty to true
@@ -399,33 +446,6 @@ void removeFinished() {
         // Returns - Nothing
 
 }
-
-//*****************************************************************************************************
-
-
-
-
-//*****************************************************************************************************
-
-void takeJobOutOfSystem()
-{
-        // Receives--------------------------
-        // Task    - take job out of the sytem
-        // Returns --------------------------
-}
-
-//*****************************************************************************************************
-
-
-//*****************************************************************************************************
-
-void processData()
-{
-        // Receives--------------------------
-        // Task    - process the data
-        // Returns --------------------------
-}
-
 //*****************************************************************************************************
 int main() {
         // Receives – Nothing
@@ -453,7 +473,7 @@ int main() {
 
 	addJobToSystem(); //Get a job into the system
 
-	while (jList[0].number!=-999 || !ltq_empty || !stq_empty || !ioq_empty) { //While jobs to process
+	while (jList[0].number!=-999){ // || !ltq_empty || !stq_empty || !ioq_empty) { //While jobs to process
 		manageLTQ(); //manage the Long Term Q
 		manageSTQ(); //manage the short term Q
 		manageCPU(); //manage the CPU

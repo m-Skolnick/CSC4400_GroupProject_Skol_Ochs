@@ -7,8 +7,7 @@
 using namespace std;
 
 struct jobType {
-	int number=-999, length, interArrival, IOBurst, CPUBurst[25], IOburstCount;
-	int currentIOBurst; //Holds the count of the current burst
+	int number=-999, length, interArrival, IOBurstLength, CPUBurst[25], IOburstCount;
 	int arrivalTime; //Holds the time at which the job entered the system
 	int exitTime; //Holds the time at which the job exited the system
 	int ltqWait, stqWait, ioWait, cpuWait; //Wait counters for each queue
@@ -32,13 +31,19 @@ int ioqCount = 0; //Keeps track of the number of jobs in the IOQ
 //stats variables
 int contextSwitchTime = 0; //total time spent context switching
 float cpuUtilization = 0.0;
-float avgResponceTime = 0.0; //avg responce time for all jobs
+float avgResponseTime = 0.0; //avg responce time for all jobs
 float avgTurnAroundTime = 0.0;  //avg turn aroung time for all jobs
 float systemThroughput = 0.0;   //system throughput per 1000 clock ticks
 float avgLTQwait = 0.0;     //average LTQ wait time
 float avgSTQwait = 0.0;     //average STQ wait time
 float avgIOQwait = 0.0;     //average IOQ wait time
 float avgCPUwait = 0.0;     //average CPU wait time
+float cpuBurstCount = 0.0; //Holds a count of all of the cpu bursts
+struct bonusStatType {
+	float total = 0, count = 0, AVG = 0, variance = 0, SD = 0;
+};
+bonusStatType interArrivals, jobLengths, ioBursts, cpuBursts;
+
 
 
 

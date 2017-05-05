@@ -1,0 +1,28 @@
+   Authors: Brendan Ochs and Micaiah Skolnick
+   Algorithm used:                                First in first out (FIFO)
+   Number of jobs processed:                      100
+   Total time to complete the simulation:         952
+   Total system time spent in context switching:  ?????
+   CPU utilization rate:                          100
+   Average Response Time for all jobs:            ?????
+   Average Turnaround Time for all jobs:          ?????
+   System Throughput per 1000 clock ticks:        105.04
+   Average LTQ wait time for all jobs:            2.56
+   Average STQ wait time for all jobs:            111
+   Average IOQ wait time for all jobs:            161.85
+EXTRA CREDIT ONE:
+   Average of all inter arrival times:            0.01
+   Variance of all inter arrival times:           0
+   Standard deviation of all inter arrival times: 0
+   Average of all job lengths:                    2.22
+   Variance of all job lengths:                   0
+   Standard deviation of all job lengths:         0
+   Average of all I/O bursts:                     289.33
+   Variance of all I/O bursts:                    0
+   Standard deviation of all I/O bursts:          0
+   Average of all CPU bursts:                     412.83
+   Variance of all CPU bursts:                    0
+   Standard deviation of all CPU bursts:          0
+-------------------------------- - 
+         | END OF PROGRAM OUTPUT | 
+-------------------------------- - 
