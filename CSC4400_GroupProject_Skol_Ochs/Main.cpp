@@ -69,18 +69,6 @@ void Footer(ofstream &Outfile) {
 	return;
 }
 //*****************************************************************************************************
-void computeAvgVarianceSD(bonusStatType &bonusStat) {
-		// Receives – Nothing
-		// Task - Calculates all of the processing statistics
-		// Returns - Nothing
-	bonusStat.AVG = bonusStat.total / bonusStat.count;
-	for (int i = 0; i < jobcount; i++) { //Sum all of the squares from the mean as first step of variance
-		bonusStat.variance += (statList[i].interArrival
-			- bonusStat.AVG)*(statList[i].interArrival - bonusStat.AVG);
-	}
-	bonusStat.variance /= bonusStat.count; //Compute last step of variance
-	bonusStat.SD = sqrt(bonusStat.variance); //Calculate Standard Deviation
-}
 void computeStats() {
 	// Receives – Nothing
 	// Task - Calculates all of the processing statistics
@@ -104,22 +92,43 @@ void computeStats() {
 
 		//Calculations for extra credit one:
 	for (int i = 0; i < job_count; i++) {
-		interArrivals.total += statList[i].interArrival;//add to the total of inter-arrival time
-		jobLengths.total += statList[i].length; //Add to the total of job lengths
+		interArrivals.sum += statList[i].interArrival;//add to the total of inter-arrival time
+		jobLengths.sum += statList[i].length; //Add to the total of job lengths
 		ioBursts.count += statList[i].IOburstCount; //Add to the IO burst count
 		cpuBursts.count = ioBursts.count; //IO burst count and CPU burst count are the same thing
-		for (int z = 0; z < statList[i].IOburstCount; i++) { //For each CPU burst
-			cpuBursts.total += statList[i].CPUBurst[z]; //Add this cpu burst to the total
-			ioBursts.total += statList[i].IOBurstLength; //Add to the total IO burst length
+		for (int z = 0; z < statList[i].IOburstCount; z++) { //For each CPU burst
+			cpuBursts.sum += statList[i].CPUBurst[z]; //Add this cpu burst to the total
+			ioBursts.sum += statList[i].IOBurstLength; //Add to the total IO burst length
 		}	
 	}
 	interArrivals.count = job_count; //set the counts for interarrivals and job lengths
 	jobLengths.count = job_count;
-
-	computeAvgVarianceSD(interArrivals);
-	computeAvgVarianceSD(jobLengths);
-	computeAvgVarianceSD(ioBursts);
-	computeAvgVarianceSD(cpuBursts);
+		//Compute the averages for each bonus stat
+	interArrivals.AVG = interArrivals.sum / interArrivals.count;
+	jobLengths.AVG = jobLengths.sum / jobLengths.count;
+	ioBursts.AVG = ioBursts.sum / ioBursts.count;
+	cpuBursts.AVG = cpuBursts.sum / cpuBursts.count;
+	//Sum all of the squares from the mean as first step of variance
+	for (int i = 0; i < job_count; i++) {
+		interArrivals.variance += (statList[i].interArrival
+			- interArrivals.AVG)*(statList[i].interArrival - interArrivals.AVG);
+		jobLengths.variance += (statList[i].interArrival
+			- jobLengths.AVG)*(statList[i].interArrival - jobLengths.AVG);
+		for (int z = 0; z < statList[i].IOburstCount; z++) { //For each CPU burst
+			ioBursts.variance += (statList[i].interArrival
+				- ioBursts.AVG)*(statList[i].interArrival - ioBursts.AVG);
+			cpuBursts.variance += (statList[i].interArrival
+				- cpuBursts.AVG)*(statList[i].interArrival - cpuBursts.AVG);
+		}
+	}
+	interArrivals.variance /= interArrivals.count; //Compute last step of variance
+	interArrivals.SD = sqrt(interArrivals.variance); //Calculate Standard Deviation
+	jobLengths.variance /= jobLengths.count; //Compute last step of variance
+	jobLengths.SD = sqrt(jobLengths.variance); //Calculate Standard Deviation
+	ioBursts.variance /= ioBursts.count; //Compute last step of variance
+	ioBursts.SD = sqrt(ioBursts.variance); //Calculate Standard Deviation
+	cpuBursts.variance /= cpuBursts.count; //Compute last step of variance
+	cpuBursts.SD = sqrt(cpuBursts.variance); //Calculate Standard Deviation
 
 }
 void printSummaryReport(ofstream &dataOUT) {
@@ -142,6 +151,7 @@ void printSummaryReport(ofstream &dataOUT) {
 
 		//Print statistics for extra credit one
 	dataOUT << "EXTRA CREDIT ONE:" << endl;
+	dataOUT << "   Sum of all inter arrival times:                " << interArrivals.sum << endl;
 	dataOUT << "   Average of all inter arrival times:            " << interArrivals.AVG << endl;
 	dataOUT << "   Variance of all inter arrival times:           " << interArrivals.variance << endl;
 	dataOUT << "   Standard deviation of all inter arrival times: " << interArrivals.SD << endl;

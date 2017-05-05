@@ -11,18 +11,19 @@
    Average STQ wait time for all jobs:            111
    Average IOQ wait time for all jobs:            161.85
 EXTRA CREDIT ONE:
-   Average of all inter arrival times:            0.01
-   Variance of all inter arrival times:           0
-   Standard deviation of all inter arrival times: 0
-   Average of all job lengths:                    2.22
-   Variance of all job lengths:                   0
-   Standard deviation of all job lengths:         0
-   Average of all I/O bursts:                     289.33
-   Variance of all I/O bursts:                    0
-   Standard deviation of all I/O bursts:          0
-   Average of all CPU bursts:                     412.83
-   Variance of all CPU bursts:                    0
-   Standard deviation of all CPU bursts:          0
+   Sum of all inter arrival times:                952
+   Average of all inter arrival times:            9.52
+   Variance of all inter arrival times:           16.23
+   Standard deviation of all inter arrival times: 4.0286
+   Average of all job lengths:                    382.96
+   Variance of all job lengths:                   1.3947e+05
+   Standard deviation of all job lengths:         373.46
+   Average of all I/O bursts:                     17.815
+   Variance of all I/O bursts:                    87.801
+   Standard deviation of all I/O bursts:          9.3702
+   Average of all CPU bursts:                     26.203
+   Variance of all CPU bursts:                    300.44
+   Standard deviation of all CPU bursts:          17.333
 -------------------------------- - 
          | END OF PROGRAM OUTPUT | 
 -------------------------------- - 

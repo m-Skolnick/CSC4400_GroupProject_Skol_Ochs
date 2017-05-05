@@ -40,7 +40,7 @@ float avgIOQwait = 0.0;     //average IOQ wait time
 float avgCPUwait = 0.0;     //average CPU wait time
 float cpuBurstCount = 0.0; //Holds a count of all of the cpu bursts
 struct bonusStatType {
-	float total = 0, count = 0, AVG = 0, variance = 0, SD = 0;
+	float sum = 0, count = 0, AVG = 0, variance = 0, SD = 0;
 };
 bonusStatType interArrivals, jobLengths, ioBursts, cpuBursts;
 
