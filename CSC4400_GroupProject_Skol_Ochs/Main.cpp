@@ -230,16 +230,16 @@ void manageSTQ() {
 			finished_flag = false;
 			//collect data
 		}
-		else if (!stq_full)         //if stq_full is false
+		else if (!stq_full)         //if STQ is not full
 		{
-			addThenDelete(STQ, stqCount, STQ, stqCount, 0); //place process in the stq
+			addThenDelete(STQ, stqCount, IOQ, ioqCount, 0); //place process in the stq
 			device = 0; //set device = 0
 			if (stqCount == MAXALLOWEDINSTQ) { //If the count = the max allowed
 				stq_full = true;
 			}
 		}
 	}
-    if(!stq_full && !ltq_empty) //if stq is not full, and ltq is not empty
+    if(stqCount < MAXALLOWEDINSTQ-1 && !ltq_empty) //if stq is not full, and ltq is not empty
     {
 		addThenDelete(STQ, stqCount, LTQ, ltqCount, 0);	//move process from LTQ to STQ
         stq_empty = false; //Set STQ empty to false to indicate that there is now a process in STQ
@@ -337,7 +337,7 @@ void manageIOQ() {
 			statList[IOQ[i].number-1].ioWait++; //Increment the io wait counter in the statistic list
 		}
 	}        
-    if(cpu_complete_flag)               //if cpu_complete_flag is true
+	if (cpu_complete_flag) {               //if cpu_complete_flag is true
 		if (!ioq_full)                   //if ioq_full is false
 		{
 			addThenDelete(IOQ, ioqCount, STQ, stqCount, 0); //add the process to the tail of the queue
@@ -349,8 +349,8 @@ void manageIOQ() {
 				ioq_full = true;        //set ioq_full equal to true				
 			}
 			cpu_complete_flag = false;  //set cpu_complete_flag to false
-        }
-
+		}
+	}
 }
 //*****************************************************************************************************
 void manageIODevice() {
@@ -361,8 +361,8 @@ void manageIODevice() {
     {
         if (device == ioprocess)               //if device is equal to ioprocess
         {
-            io_timer++;
-            if (io_timer == IOQ[0].currentIOBurst)//if io timer is equal to IOBurst LENGTH
+            io_timer++; //Increment the IO timer
+            if (io_timer == IOQ[0].currentIOBurst)//If io timer is equal to IOBurst LENGTH
             {
                 io_complete_flag = true; //set io_complete_flag to true
                 device = 0; //set device equal to 0
@@ -453,7 +453,7 @@ int main() {
 
 	addJobToSystem(); //Get a job into the system
 
-	while (jList[0].number!=-999) {// || !ltq_empty || !stq_empty || !ioq_empty) { //While jobs to process
+	while (jList[0].number!=-999 || !ltq_empty || !stq_empty || !ioq_empty) { //While jobs to process
 		manageLTQ(); //manage the Long Term Q
 		manageSTQ(); //manage the short term Q
 		manageCPU(); //manage the CPU
