@@ -27,6 +27,7 @@
 #include <ctype.h>
 #include <string>
 #include <sstream>
+#include <math.h>
 #include "Variables.h"
 using namespace std;
 //*****************************************************************************************************
@@ -94,7 +95,6 @@ void computeStats() {
 
 	systemThroughput = (float)(job_count / system_clock) * 1000;
 	cpuUtilization = (float)((system_clock-totCPUwait) / system_clock) * 100;
-	avgResponseTime = 3;
 
 		//Calculations for extra credit one:
 	for (int i = 0; i < job_count; i++) {
@@ -149,11 +149,14 @@ void printSummaryReport(ofstream &dataOUT) {
 		right << setw (9) << job_count << endl;
 	dataOUT << "   Total time to complete the simulation:         " << fixed << setprecision(2) <<
 		right << setw(9) << system_clock << endl;
-	dataOUT << "   Total system time spent in context switching:  ?????" << endl;
+    dataOUT << "   Total system time spent in context switching:  " << fixed << setprecision(2) <<
+    right << setw(9) << contextSwitchTime << endl;
 	dataOUT << "   CPU utilization rate:                          " << fixed << setprecision(2) <<
 		right << setw(9) << cpuUtilization << endl;
-	dataOUT << "   Average Response Time for all jobs:            ?????" << endl;
-	dataOUT << "   Average Turnaround Time for all jobs:          ?????" << endl;
+    dataOUT << "   Average Response Time for all jobs:            " << fixed << setprecision(2) <<
+    right << setw(9) << avgResponseTime << endl;
+	dataOUT << "   Average Turnaround Time for all jobs:          " << fixed << setprecision(2) <<
+        right << setw(9) << avgTurnAroundTime << endl;
 	dataOUT << "   System Throughput per 1000 clock ticks:        " << fixed << setprecision(2) <<
 		right << setw(9) << fixed <<
 		setprecision(2) << systemThroughput << endl;
@@ -413,6 +416,7 @@ void manageCPU() {
 				{
 					if(!stq_empty && cpu_ready_flag) //if stq_empty false and cpu_ready_flag true
 					{
+                        contextSwitchTime = contextSwitchTime+2; // add context switch time
 						process = STQ[0].number; //set process equal to the head of the STQ
 						cpu = process;      //set cpu equal to process
 						deleteJobFromQueue(STQ, 0, stqCount); //delete job from queue
@@ -501,6 +505,39 @@ void manageIODevice() {
         }
     }
 }
+
+//*****************************************************************************************************
+
+void turnAroundClock()
+{
+            //File Name: Main.cpp
+            //Primary: Micaiah Skolnick / Contributing Brendan Ochs
+            //Date last revised: 05/04/17
+            // Receives-  LTQcount, STQcount, IOQcount
+            // Task    - increment all clocks while in the system
+            // Returns - turnAroundTime
+    
+    avgTurnAroundTime += ltqCount;
+    avgTurnAroundTime += stqCount;
+    avgTurnAroundTime += ioqCount;
+    avgTurnAroundTime += currentJob;
+    
+}
+//*****************************************************************************************************
+
+void responceTime()
+{
+            //File Name: Main.cpp
+            //Primary: Micaiah Skolnick / Contributing Brendan Ochs
+            //Date last revised: 05/04/17
+            // Receives-  ltqcount, stqcount, ioqcount, avgResponce time
+            // Task    - add up reponce times
+            // Returns - total responce time
+    
+    avgResponseTime += ltqCount;
+    avgResponseTime += stqCount;
+    
+}
 //*****************************************************************************************************
 int main() {
 		//File Name: Main.cpp
@@ -511,7 +548,9 @@ int main() {
         // Returns - Nothing
 	getData(); //Retrieve data from input file
 	addJobToSystem(); //Get a job into the system
+    totalJobs = jobcount;
 	while (jList[0].number!=-999){ // While jobs to process
+        
 		manageLTQ(); //manage the Long Term Q
 		manageSTQ(); //manage the short term Q
 		manageCPU(); //manage the CPU
@@ -519,7 +558,11 @@ int main() {
 		manageIODevice(); //manage the IO device
 		addJobToSystem(); //Get a job into the system
 		system_clock++; //Increment the clock
+        turnAroundClock();  // add time to turnaround and get turn avg turn around
+        responceTime();     // add time to responce time
 	}
+    avgTurnAroundTime = avgTurnAroundTime/totalJobs; //calculate avg turn around time
+    avgResponseTime = avgResponseTime/totalJobs; //calculate avg responce time
 	computeStats(); //Compute all of the statistical data
 	Header(dataOUT5); //Print a data header
 	printSummaryReport(dataOUT5); //Print a report of stat. data

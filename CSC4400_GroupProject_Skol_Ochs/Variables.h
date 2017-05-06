@@ -11,6 +11,7 @@ struct jobType {
 	int arrivalTime; //Holds the time at which the job entered the system
 	int exitTime; //Holds the time at which the job exited the system
 	int ltqWait, stqWait, ioWait, cpuWait; //Wait counters for each queue
+    int responceTimer = 0;  // a timer to count per process until the cpu has the job
 };
 
 //Variables added by Micaiah
@@ -21,6 +22,7 @@ const int MAXALLOWEDINLTQ = 60; //Set the max num of jobs allowed in long term Q
 const int MAXALLOWEDINSTQ = 30;
 const int MAXALLOWEDINIOQ = 30;
 
+int totalJobs = 0;  // keeps track of the total amount of jobs coming throught the program.
 int jobcount = 0;  //keeps track of how many jobs are actually read in to jList[maxjobnumber].
 int currentJob = 0;//keeps track of which job is currently in the system
 int system_clock = 0; //Keeps track of the system time
